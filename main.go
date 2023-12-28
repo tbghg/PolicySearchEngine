@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	var crawlerCollector service.CrawlerCollector
+	var crawlerCollector service.MetaCrawlerCollector
 
-	var scienceColly scienceAndTechnology.ScienceColly
+	var scienceColly scienceAndTechnology.ScienceMetaColly
 	//var educationColly education.EducationColly
 
 	crawlerCollector.Crawlers = append(crawlerCollector.Crawlers,

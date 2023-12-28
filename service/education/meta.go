@@ -70,4 +70,4 @@ func (s *EducationColly) Run() {
 	}
 }
 
-var _ service.CrawlerColly = (*EducationColly)(nil)
+var _ service.MetaCrawler = (*EducationColly)(nil)
