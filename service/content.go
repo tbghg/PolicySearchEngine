@@ -15,14 +15,13 @@ type ContentCrawlerCollector struct {
 
 func (c *ContentCrawlerCollector) Run() {
 	for _, crawler := range c.Crawlers {
-		c := crawler
-		c.Init()
+		crawler.Init()
 		for {
-			status := c.Import()
+			status := crawler.Import()
 			if status <= 0 {
 				return
 			}
-			c.Run()
+			crawler.Run()
 		}
 	}
 }
