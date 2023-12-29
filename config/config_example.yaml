@@ -1,0 +1,9 @@
+mysql:
+  addr: "localhost:3305"  # mysql地址
+  password: password    # mysql密码
+  user: user         # mysql用户名
+  dbname: dbname    # mysql数据库名
+redis:
+  addr: "localhost:6379" # redis地址
+  password: "password" # redis密码
+  db: 0             # redis数据库
