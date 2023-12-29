@@ -18,11 +18,10 @@ type MetaCrawlerCollector struct {
 func (m *MetaCrawlerCollector) Run() {
 	for _, crawler := range m.Crawlers {
 		c := crawler
-		go func() {
-			c.Init()
-			c.PageTraverse()
-			c.Operate()
-			c.Run()
-		}()
+		// todo 代码完善后添加协程
+		c.Init()
+		c.PageTraverse()
+		c.Operate()
+		c.Run()
 	}
 }

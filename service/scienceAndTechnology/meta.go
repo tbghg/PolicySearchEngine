@@ -1,6 +1,7 @@
 package scienceAndTechnology
 
 import (
+	"PolicySearchEngine/dao/redis"
 	"PolicySearchEngine/service"
 	"errors"
 	"fmt"
@@ -63,6 +64,13 @@ func (s *ScienceMetaColly) PageTraverse() {
 }
 
 func (s *ScienceMetaColly) Operate() {
+
+	redis.SetRedisStorage(s.c, "meta-sci", s.startPages)
+
+	// 请求链接时输出正在访问的链接
+	//s.c.OnRequest(func(r *colly.Request) {
+	//	fmt.Println("Visiting", r.URL)
+	//})
 
 	// todo 存储应该写在 OnHTML 内部
 
