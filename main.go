@@ -3,7 +3,7 @@ package main
 import (
 	"PolicySearchEngine/config"
 	"PolicySearchEngine/service"
-	"PolicySearchEngine/service/scienceAndTechnology"
+	scienceAndTechnologyContent "PolicySearchEngine/service/scienceAndTechnology/content"
 )
 
 //func main() {
@@ -29,7 +29,7 @@ func main() {
 
 	var crawlerCollector service.ContentCrawlerCollector
 
-	var scienceColly scienceAndTechnology.ScienceContentColly
+	var scienceColly scienceAndTechnologyContent.ScienceContentColly
 
 	crawlerCollector.Crawlers = append(crawlerCollector.Crawlers,
 		&scienceColly,

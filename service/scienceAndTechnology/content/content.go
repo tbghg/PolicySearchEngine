@@ -1,4 +1,4 @@
-package scienceAndTechnology
+package content
 
 import (
 	"PolicySearchEngine/model"

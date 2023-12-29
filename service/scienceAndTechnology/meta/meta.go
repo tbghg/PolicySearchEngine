@@ -1,4 +1,4 @@
-package scienceAndTechnology
+package meta
 
 import (
 	"PolicySearchEngine/dao/redis"

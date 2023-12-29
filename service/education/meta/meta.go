@@ -1,4 +1,4 @@
-package education
+package meta
 
 import (
 	"PolicySearchEngine/service"
