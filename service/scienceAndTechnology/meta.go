@@ -78,6 +78,7 @@ func (s *ScienceMetaColly) Operate() {
 		link := e.ChildAttr("a", "href")
 		date := e.ChildText("span")
 		err := s.c.Visit(e.Request.AbsoluteURL(link))
+		// todo 因为需要监控，这样处理肯定是有问题的
 		if errors.Is(err, colly.ErrAlreadyVisited) {
 			return
 		}

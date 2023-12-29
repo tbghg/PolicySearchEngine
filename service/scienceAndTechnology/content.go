@@ -1,55 +1,63 @@
 package scienceAndTechnology
 
 import (
+	"PolicySearchEngine/model"
 	"PolicySearchEngine/service"
 	"fmt"
+	"github.com/gocolly/colly"
 	"regexp"
 )
 
 type ScienceContentColly struct {
-	// 单纯使用map匹配规则，自定义优先级较难实现
-	rulesMatch map[*regexp.Regexp]func()
-	// 使用数组记录规则顺序，实现优先级的排序
-	rules []*regexp.Regexp
+	rules []*Rule
 	// 等待处理的url队列
-	waitQueue []string
+	waitQueue []model.Meta
 }
 
-func (s ScienceContentColly) Init() {
-	s.register(
-		// todo 示例，待完善
-		regexp.MustCompile("https?://www\\.most\\.gov\\.cn/xxgk/.*\\.html?"),
-		ruleExample,
-	)
-	// 兜底规则
-	s.register(
-		// todo 查下资料，看看正则兜底有什么好的写法
-		nil,
-		// todo 处理的话可以考虑统一报个日志，人工修一下
-		nil,
+type Rule struct {
+	r *regexp.Regexp
+	c *colly.Collector
+}
+
+func (s *ScienceContentColly) Init() {
+	// 注册规则
+	s.rules = append(s.rules,
+		s.xxgkCollector(),
 	)
 }
 
-// 注册的规则数量可能会较多，单独拎个函数出来
-func (s ScienceContentColly) register(rule *regexp.Regexp, f func()) {
-	s.rulesMatch[rule] = f
-	s.rules = append(s.rules, rule)
-}
-
-func (s ScienceContentColly) Import() (status int) {
+func (s *ScienceContentColly) Import() (status int) {
 	//TODO 从DB里面读取，目前可以先不接DB
-	panic("implement me")
-}
-
-func (s ScienceContentColly) Run() {
-	// todo waitQueue中的url均处理完即可
-	for _, url := range s.waitQueue {
-		fmt.Printf("I'm dealing %s...\n", url)
+	if len(s.waitQueue) != 0 {
+		return 0
 	}
+	s.waitQueue = []model.Meta{
+		{
+			//Date      :time.Date(),
+			Title: "中共中央办公厅 国务院办公厅印发《关于进一步加强青年科技人才培养和使用的若干措...",
+			Url:   "https://www.most.gov.cn/xxgk/xinxifenlei/fdzdgknr/fgzc/gfxwj/gfxwj2023/202305/t20230517_186077.html",
+		},
+	}
+	return 1
 }
 
-func ruleExample() {
-	// 示例规则
+func (s *ScienceContentColly) Run() {
+	// todo waitQueue中的url均处理完即可
+	for _, meta := range s.waitQueue {
+		fmt.Printf("I'm dealing %s...\n", meta.Url)
+
+		// 依次匹配规则
+		for _, rule := range s.rules {
+			if rule.r.MatchString(meta.Url) {
+				err := rule.c.Visit(meta.Url)
+				if err != nil {
+					fmt.Println(err)
+				}
+				break
+			}
+		}
+
+	}
 }
 
 var _ service.ContentCrawler = (*ScienceContentColly)(nil)

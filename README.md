@@ -35,3 +35,5 @@
 		return c.store.Visited(uHash)
 	}
 ```
+
+12.29记录：目前该写DB部分了，把DB写了，然后开始搞content部分，搞成后算是结束了爬虫的一个模块，之后开发就会快很多了
