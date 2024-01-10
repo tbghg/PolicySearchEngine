@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/url"
@@ -44,7 +45,7 @@ func (s *Storage) Init() error {
 	}
 	_, err := s.Client.Ping().Result()
 	if err != nil {
-		return fmt.Errorf("Redis connection error: %s", err.Error())
+		return fmt.Errorf("redis connection error: %s", err.Error())
 	}
 	return err
 }
@@ -81,7 +82,7 @@ func (s *Storage) Visited(requestID uint64) error {
 // IsVisited implements colly/storage.IsVisited()
 func (s *Storage) IsVisited(requestID uint64) (bool, error) {
 	_, err := s.Client.Get(s.getIDStr(requestID)).Result()
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		return false, nil
 	} else if err != nil {
 		return false, err
@@ -115,7 +116,7 @@ func (s *Storage) Cookies(u *url.URL) string {
 	s.mu.RLock()
 	cookiesStr, err := s.Client.Get(s.getCookieID(u.Host)).Result()
 	s.mu.RUnlock()
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		cookiesStr = ""
 	} else if err != nil {
 		// return nil, err

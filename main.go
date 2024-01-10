@@ -2,38 +2,24 @@ package main
 
 import (
 	"PolicySearchEngine/config"
+	"PolicySearchEngine/dao/database"
 	"PolicySearchEngine/service"
-	scienceAndTechnologyContent "PolicySearchEngine/service/scienceAndTechnology/content"
+	"PolicySearchEngine/service/scienceAndTechnology"
 )
-
-//func main() {
-//	// 配置初始化
-//	config.Init()
-//
-//	var crawlerCollector service.MetaCrawlerCollector
-//
-//	var scienceColly scienceAndTechnology.ScienceMetaColly
-//	//var educationColly education.EducationColly
-//
-//	crawlerCollector.Crawlers = append(crawlerCollector.Crawlers,
-//		&scienceColly,
-//		//&educationColly,
-//	)
-//
-//	crawlerCollector.Run()
-//}
 
 func main() {
 	// 配置初始化
 	config.Init()
+	database.Init()
+	database.InitTable()
 
-	var crawlerCollector service.ContentCrawlerCollector
+	var crawler service.Crawler
 
-	var scienceColly scienceAndTechnologyContent.ScienceContentColly
+	var scienceColly scienceAndTechnology.ScienceColly
+	scienceColly.Register(&crawler)
+	// 新部门加入示例：
+	//var educationColly education.EducationColly
+	//educationColly.Register(&crawler)
 
-	crawlerCollector.Crawlers = append(crawlerCollector.Crawlers,
-		&scienceColly,
-	)
-
-	crawlerCollector.Run()
+	crawler.Run()
 }

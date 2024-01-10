@@ -1,20 +1,27 @@
 package meta
 
 import (
+	"PolicySearchEngine/dao/database"
 	"PolicySearchEngine/dao/redis"
 	"PolicySearchEngine/service"
+	"PolicySearchEngine/utils"
 	"errors"
 	"fmt"
 	"github.com/gocolly/colly"
 	"regexp"
 )
 
-const initPage = "https://www.most.gov.cn/satp/kjzc/zh/index.html"
+const (
+	initPage     = "https://www.most.gov.cn/satp/kjzc/zh/index.html"
+	departmentID = 1
+	provinceID   = 35
+)
 
 type ScienceMetaColly struct {
 	c *colly.Collector
 	// 遍历起始页
 	startPages []string
+	metaDal    *database.MetaDal
 }
 
 func (s *ScienceMetaColly) Init() {
@@ -45,9 +52,10 @@ func (s *ScienceMetaColly) Init() {
 			// 去除 404 页面
 			regexp.MustCompile("http://www\\.mof\\.gov\\.cn/404\\.htm"),
 		),
-		colly.MaxDepth(0),
+		colly.MaxDepth(1),
 	)
 
+	s.metaDal = &database.MetaDal{Db: database.MyDb()}
 }
 
 func (s *ScienceMetaColly) PageTraverse() {
@@ -69,25 +77,33 @@ func (s *ScienceMetaColly) Operate() {
 
 	// 请求链接时输出正在访问的链接
 	//s.c.OnRequest(func(r *colly.Request) {
-	//	fmt.Println("Visiting", r.URL)
+	//	fmt.Println("Visiting ", r.URL)
 	//})
 
-	// todo 存储应该写在 OnHTML 内部
-
 	s.c.OnHTML(".list-main ul li", func(e *colly.HTMLElement) {
-		link := e.ChildAttr("a", "href")
+
+		url := e.Request.AbsoluteURL(e.ChildAttr("a", "href"))
 		date := e.ChildText("span")
-		err := s.c.Visit(e.Request.AbsoluteURL(link))
-		// todo 因为需要监控，这样处理肯定是有问题的
+		title := e.ChildText("a")
+
+		err := s.c.Visit(url)
 		if errors.Is(err, colly.ErrAlreadyVisited) {
 			return
 		}
-
 		if err != nil {
-			fmt.Println(err.Error() + fmt.Sprintf(" %q -> %s\n", e.Text, e.Request.AbsoluteURL(link)))
+			fmt.Println(err.Error() + fmt.Sprintf(" %q -> %s\n", e.Text, url))
 			return
 		}
-		fmt.Printf("Link found: %s %q -> %s\n\n", date, e.ChildText("a"), e.Request.AbsoluteURL(link))
+
+		dateTime, err := utils.StringToTime(date)
+		if err != nil {
+			fmt.Println(err.Error() + fmt.Sprintf("Time Falted %s %q -> %s\n", date, title, url))
+			return
+		}
+
+		s.metaDal.UpdateMeta(dateTime, title, url, departmentID, provinceID)
+
+		fmt.Printf("Link found: %s %q -> %s\n\n", date, title, url)
 	})
 
 }

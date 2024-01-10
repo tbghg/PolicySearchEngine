@@ -4,8 +4,10 @@ go 1.21
 
 require (
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gocolly/colly v1.2.0
 	github.com/spf13/viper v1.18.2
+	gorm.io/driver/mysql v1.5.2
 	gorm.io/gorm v1.25.5
 )
 
