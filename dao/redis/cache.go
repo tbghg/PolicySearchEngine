@@ -4,6 +4,7 @@ import (
 	"PolicySearchEngine/config"
 	"github.com/gocolly/colly"
 	"hash/fnv"
+	"time"
 )
 
 func SetRedisStorage(c *colly.Collector, prefix string, urls []string) {
@@ -14,6 +15,7 @@ func SetRedisStorage(c *colly.Collector, prefix string, urls []string) {
 		DB:          config.V.GetInt("redis.db"),
 		Prefix:      prefix,
 		ExceptionID: UrlToRequestID(urls),
+		Expires:     time.Hour,
 	}
 
 	err := c.SetStorage(storage)
