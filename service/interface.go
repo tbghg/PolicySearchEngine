@@ -18,6 +18,12 @@ type MetaCrawler interface {
 	Operate()
 	// Run 启动
 	Run()
+	// Destroy 销毁
+	Destroy()
+	// ExecuteWorkflow 执行一次工作流
+	ExecuteWorkflow()
+	// Watch 监控
+	Watch()
 }
 
 type ServiceCrawler interface {

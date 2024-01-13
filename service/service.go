@@ -8,11 +8,9 @@ func (c *Crawler) Run() {
 	for _, crawler := range c.ServiceCrawler {
 
 		meta := crawler.Meta()
-		meta.Init()
-		meta.PageTraverse()
-		meta.Operate()
-		meta.Run()
-
+		meta.ExecuteWorkflow()
+		go meta.Watch()
+		select {}
 		//content := crawler.Content()
 		//content.Init()
 		//for {

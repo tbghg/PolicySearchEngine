@@ -28,7 +28,7 @@ func SetRedisStorage(c *colly.Collector, prefix string, urls []string) {
 func UrlToRequestID(urls []string) (requestID []uint64) {
 	for _, u := range urls {
 		h := fnv.New64a()
-		h.Write([]byte(u))
+		_, _ = h.Write([]byte(u))
 		requestID = append(requestID, h.Sum64())
 	}
 	return

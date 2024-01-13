@@ -8,13 +8,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gocolly/colly"
+	"github.com/robfig/cron/v3"
 	"regexp"
+	"time"
 )
 
 const (
 	initPage     = "https://www.most.gov.cn/satp/kjzc/zh/index.html"
-	departmentID = 1
-	provinceID   = 35
+	departmentID = 1  // 科学技术部
+	provinceID   = 35 // 中央
 )
 
 type ScienceMetaColly struct {
@@ -75,11 +77,6 @@ func (s *ScienceMetaColly) Operate() {
 
 	redis.SetRedisStorage(s.c, "meta-sci", s.startPages)
 
-	// 请求链接时输出正在访问的链接
-	//s.c.OnRequest(func(r *colly.Request) {
-	//	fmt.Println("Visiting ", r.URL)
-	//})
-
 	s.c.OnHTML(".list-main ul li", func(e *colly.HTMLElement) {
 
 		url := e.Request.AbsoluteURL(e.ChildAttr("a", "href"))
@@ -101,7 +98,7 @@ func (s *ScienceMetaColly) Operate() {
 			return
 		}
 
-		s.metaDal.UpdateMeta(dateTime, title, url, departmentID, provinceID)
+		s.metaDal.InsertMeta(dateTime, title, url, departmentID, provinceID)
 
 		fmt.Printf("Link found: %s %q -> %s\n\n", date, title, url)
 	})
@@ -112,9 +109,40 @@ func (s *ScienceMetaColly) Run() {
 	for _, page := range s.startPages {
 		err := s.c.Visit(page)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(fmt.Sprintf("page:%s, err:%+v", page, err))
 		}
 	}
+}
+
+func (s *ScienceMetaColly) Destroy() {
+	// 下次运行是在一天后了，指向nil，保证内存释放，让gc自动去回收
+	s.c = nil
+	s.metaDal = nil
+	s.startPages = nil
+}
+
+func (s *ScienceMetaColly) ExecuteWorkflow() {
+	s.Init()
+	s.PageTraverse()
+	s.Operate()
+	s.Run()
+	s.Destroy()
+}
+
+func (s *ScienceMetaColly) Watch() {
+	c := cron.New()
+	// 添加每天早上8点执行的定时任务
+	_, err := c.AddFunc("57 12 * * *", func() {
+		fmt.Printf("定时任务运行 time:%s departmentID:%d provinceID:%d \n", time.Now(), departmentID, provinceID)
+		s.ExecuteWorkflow()
+	})
+	if err != nil {
+		fmt.Printf("定时任务添加失败 err: %+v \n", err)
+		return
+	}
+	// 启动定时任务
+	c.Start()
+	select {}
 }
 
 var _ service.MetaCrawler = (*ScienceMetaColly)(nil)
