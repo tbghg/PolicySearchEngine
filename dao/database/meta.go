@@ -39,3 +39,16 @@ func (m *MetaDal) UpdateMeta(date time.Time, title string, url string) {
 		log.Fatal(result.Error)
 	}
 }
+
+func (m *MetaDal) GetAllMeta(departmentID, provinceID uint) *[]model.Meta {
+	var metaList []model.Meta
+	result := m.Db.Where(model.Meta{
+		DepartmentID: departmentID,
+		ProvinceID:   provinceID,
+	}).Find(&metaList)
+	if result.Error != nil {
+		fmt.Printf("读取数据失败: %v\n", result.Error)
+		return nil
+	}
+	return &metaList
+}

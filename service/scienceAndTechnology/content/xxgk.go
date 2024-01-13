@@ -15,7 +15,14 @@ func (s *ScienceContentColly) xxgkCollector() *Rule {
 
 	c.OnHTML(".xxgk_detail_content", func(e *colly.HTMLElement) {
 		//fmt.Println(e.DOM.Html())
-		fmt.Println(e.Text)
+
+		title := e.ChildText(".xxgk_title")
+		regex := regexp.MustCompile(`[\n\t]`)
+		cleanedTitle := regex.ReplaceAllString(title, "")
+		fmt.Println(cleanedTitle)
+
+		//content := e.ChildText("#Zoom")
+		//fmt.Println(content)
 	})
 
 	// 可自行决定是否要上存储

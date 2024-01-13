@@ -142,7 +142,6 @@ func (s *ScienceMetaColly) Watch() {
 	}
 	// 启动定时任务
 	c.Start()
-	select {}
 }
 
 var _ service.MetaCrawler = (*ScienceMetaColly)(nil)

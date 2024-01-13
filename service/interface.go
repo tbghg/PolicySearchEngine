@@ -4,9 +4,13 @@ type ContentCrawler interface {
 	// Init 初始化
 	Init()
 	// Import 分批读取要爬取的网站
-	Import() (status int)
+	Import() (success bool)
 	// Run 启动
 	Run()
+	// Destroy 销毁
+	Destroy()
+	// ExecuteWorkflow 执行一次工作流
+	ExecuteWorkflow()
 }
 
 type MetaCrawler interface {
