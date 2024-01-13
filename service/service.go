@@ -1,11 +1,11 @@
 package service
 
-type Crawler struct {
-	ServiceCrawler []ServiceCrawler
+type Crawlers struct {
+	Crawler []Crawler
 }
 
-func (c *Crawler) Run() {
-	for _, crawler := range c.ServiceCrawler {
+func (c *Crawlers) Run() {
+	for _, crawler := range c.Crawler {
 
 		meta := crawler.Meta()
 		meta.ExecuteWorkflow()
@@ -21,11 +21,10 @@ func (c *Crawler) Run() {
 		//	content.Run()
 		//}
 
-		// todo 什么时候启动监控比较好？
 	}
 }
 
 // Register 新部门加入Crawler
-func (c *Crawler) Register(crawler ServiceCrawler) {
-	c.ServiceCrawler = append(c.ServiceCrawler, crawler)
+func (c *Crawlers) Register(crawler Crawler) {
+	c.Crawler = append(c.Crawler, crawler)
 }

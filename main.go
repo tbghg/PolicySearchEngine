@@ -13,7 +13,7 @@ func main() {
 	database.Init()
 	database.InitTable()
 
-	var crawler service.Crawler
+	var crawler service.Crawlers
 
 	var scienceColly scienceAndTechnology.ScienceColly
 	scienceColly.Register(&crawler)

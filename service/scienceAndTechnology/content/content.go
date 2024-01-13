@@ -14,6 +14,7 @@ type ScienceContentColly struct {
 	waitQueue []model.Meta
 }
 
+// Rule 每个正则对应一个收集器
 type Rule struct {
 	r *regexp.Regexp
 	c *colly.Collector
@@ -26,6 +27,7 @@ func (s *ScienceContentColly) Init() {
 	)
 }
 
+// Import 分批次导入
 func (s *ScienceContentColly) Import() (status int) {
 	//TODO 从DB里面读取，目前可以先不接DB
 	if len(s.waitQueue) != 0 {
