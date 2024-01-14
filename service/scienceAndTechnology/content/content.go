@@ -32,6 +32,11 @@ func (s *ScienceContentColly) Init() {
 	s.rules = append(s.rules,
 		s.xxgkCollector(),
 		s.kjzcCollector(),
+		s.kjbgzCollector(),
+		s.zhengceCollector(),
+		s.gongbaoCollector(),
+		s.xinwenCollector(),
+		s.chinataxCollector(),
 	)
 	s.metaDal = &database.MetaDal{Db: database.MyDb()}
 }
