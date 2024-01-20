@@ -26,8 +26,6 @@ type MetaCrawler interface {
 	Destroy()
 	// ExecuteWorkflow 执行一次工作流
 	ExecuteWorkflow()
-	// Watch 监控
-	Watch()
 }
 
 type Crawler interface {

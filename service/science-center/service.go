@@ -1,9 +1,9 @@
-package scienceAndTechnology
+package science_center
 
 import (
 	"PolicySearchEngine/service"
-	"PolicySearchEngine/service/scienceAndTechnology/content"
-	"PolicySearchEngine/service/scienceAndTechnology/meta"
+	"PolicySearchEngine/service/science-center/content"
+	"PolicySearchEngine/service/science-center/meta"
 )
 
 const name = "science-center" // 中央科技部

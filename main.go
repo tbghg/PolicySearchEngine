@@ -4,7 +4,8 @@ import (
 	"PolicySearchEngine/config"
 	"PolicySearchEngine/dao/database"
 	"PolicySearchEngine/service"
-	"PolicySearchEngine/service/scienceAndTechnology"
+	"PolicySearchEngine/service/education-center"
+	science_center "PolicySearchEngine/service/science-center"
 )
 
 func main() {
@@ -15,11 +16,11 @@ func main() {
 
 	var crawler service.Crawlers
 
-	var scienceColly scienceAndTechnology.ScienceColly
+	var scienceColly science_center.ScienceColly
 	scienceColly.Register(&crawler)
-	// 新部门加入示例：
-	//var educationColly education.EducationColly
-	//educationColly.Register(&crawler)
+
+	var educationColly education_center.EducationColly
+	educationColly.Register(&crawler)
 
 	crawler.Run()
 }

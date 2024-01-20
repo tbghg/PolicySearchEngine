@@ -8,9 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gocolly/colly"
-	"github.com/robfig/cron/v3"
 	"regexp"
-	"time"
 )
 
 const (
@@ -127,21 +125,6 @@ func (s *ScienceMetaColly) ExecuteWorkflow() {
 	s.Operate()
 	s.Run()
 	s.Destroy()
-}
-
-func (s *ScienceMetaColly) Watch() {
-	c := cron.New()
-	// 添加每天早上8点执行的定时任务
-	_, err := c.AddFunc("57 12 * * *", func() {
-		fmt.Printf("定时任务运行 time:%s departmentID:%d provinceID:%d \n", time.Now(), departmentID, provinceID)
-		s.ExecuteWorkflow()
-	})
-	if err != nil {
-		fmt.Printf("定时任务添加失败 err: %+v \n", err)
-		return
-	}
-	// 启动定时任务
-	c.Start()
 }
 
 var _ service.MetaCrawler = (*ScienceMetaColly)(nil)

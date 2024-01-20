@@ -17,8 +17,9 @@ const (
 type ScienceContentColly struct {
 	rules []*Rule
 	// 等待处理的url队列
-	waitQueue *[]model.Meta
-	metaDal   *database.MetaDal
+	waitQueue  *[]model.Meta
+	metaDal    *database.MetaDal
+	contentDal *database.ContentDal
 }
 
 // Rule 每个正则对应一个收集器
@@ -39,6 +40,7 @@ func (s *ScienceContentColly) Init() {
 		s.chinataxCollector(),
 	)
 	s.metaDal = &database.MetaDal{Db: database.MyDb()}
+	s.contentDal = &database.ContentDal{Db: database.MyDb()}
 }
 
 // Import 分批次导入
@@ -79,6 +81,7 @@ func (s *ScienceContentColly) Run() {
 func (s *ScienceContentColly) Destroy() {
 	s.rules = nil
 	s.metaDal = nil
+	s.contentDal = nil
 	s.waitQueue = nil
 }
 
