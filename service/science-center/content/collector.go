@@ -8,6 +8,18 @@ import (
 	"regexp"
 )
 
+func (s *ScienceContentColly) getRules() []*service.Rule {
+	return []*service.Rule{
+		s.xxgkCollector(),
+		s.kjzcCollector(),
+		s.kjbgzCollector(),
+		s.zhengceCollector(),
+		s.gongbaoCollector(),
+		s.xinwenCollector(),
+		s.chinataxCollector(),
+	}
+}
+
 func (s *ScienceContentColly) updateTitle(e *colly.HTMLElement) {
 	title := utils.TidyString(e.Text)
 	s.metaDal.UpdateMetaTitle(title, e.Request.URL.String())

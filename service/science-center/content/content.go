@@ -22,15 +22,7 @@ type ScienceContentColly struct {
 
 func (s *ScienceContentColly) Init() {
 	// 注册规则
-	s.rules = append(s.rules,
-		s.xxgkCollector(),
-		s.kjzcCollector(),
-		s.kjbgzCollector(),
-		s.zhengceCollector(),
-		s.gongbaoCollector(),
-		s.xinwenCollector(),
-		s.chinataxCollector(),
-	)
+	s.rules = append(s.rules, s.getRules()...)
 	s.metaDal = &database.MetaDal{Db: database.MyDb()}
 	s.contentDal = &database.ContentDal{Db: database.MyDb()}
 }

@@ -7,6 +7,13 @@ import (
 	"regexp"
 )
 
+func (s *EducationContentColly) getRules() []*service.Rule {
+	return []*service.Rule{
+		s.zcfgCollector(),
+		s.srcsiteCollector(),
+	}
+}
+
 func (s *EducationContentColly) updateTitle(e *colly.HTMLElement) {
 	title := utils.TidyString(e.Text)
 	s.metaDal.UpdateMetaTitle(title, e.Request.URL.String())

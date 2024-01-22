@@ -22,10 +22,7 @@ type EducationContentColly struct {
 
 func (s *EducationContentColly) Init() {
 	// 注册规则
-	s.rules = append(s.rules,
-		s.zcfgCollector(),
-		s.srcsiteCollector(),
-	)
+	s.rules = append(s.rules, s.getRules()...)
 	s.metaDal = &database.MetaDal{Db: database.MyDb()}
 	s.contentDal = &database.ContentDal{Db: database.MyDb()}
 }
