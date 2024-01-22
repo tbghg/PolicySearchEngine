@@ -5,7 +5,7 @@ import (
 	"PolicySearchEngine/dao/database"
 	"PolicySearchEngine/service"
 	"PolicySearchEngine/service/education-center"
-	science_center "PolicySearchEngine/service/science-center"
+	"PolicySearchEngine/service/science-center"
 )
 
 func main() {

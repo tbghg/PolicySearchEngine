@@ -1,38 +1,34 @@
 package content
 
 import (
+	"PolicySearchEngine/service"
 	"fmt"
 	"github.com/gocolly/colly"
 	"regexp"
 )
 
-func (s *ScienceContentColly) xxgkCollector() *Rule {
+func (s *ScienceContentColly) xxgkCollector() *service.Rule {
 	rule := regexp.MustCompile("https?://www\\.most\\.gov\\.cn/xxgk/.*\\.html?")
-	c := colly.NewCollector(
-		colly.URLFilters(rule),
-		colly.MaxDepth(0),
-	)
 
-	c.OnHTML(".xxgk_detail_content", func(e *colly.HTMLElement) {
-		//fmt.Println(e.DOM.Html())
+	hf := &service.HtmlFunc{
+		QuerySelect: ".xxgk_detail_content",
+		F: func(e *colly.HTMLElement) {
+			//fmt.Println(e.DOM.Html())
 
-		title := e.ChildText(".xxgk_title")
-		regex := regexp.MustCompile(`[\n\t]`)
-		cleanedTitle := regex.ReplaceAllString(title, "")
-		fmt.Println(cleanedTitle)
+			title := e.ChildText(".xxgk_title")
+			regex := regexp.MustCompile(`[\n\t]`)
+			cleanedTitle := regex.ReplaceAllString(title, "")
+			fmt.Println(cleanedTitle)
 
-		//content := e.ChildText("#Zoom")
-		//fmt.Println(content)
-	})
-
-	// 可自行决定是否要上存储
-	return &Rule{
-		r: rule,
-		c: c,
+			//content := e.ChildText("#Zoom")
+			//fmt.Println(content)
+		},
 	}
+
+	return service.NormalRule(rule, hf)
 }
 
-func (s *ScienceContentColly) kjzcCollector() *Rule {
+func (s *ScienceContentColly) kjzcCollector() *service.Rule {
 
 	rule1 := regexp.MustCompile("https?://www\\.most\\.gov\\.cn/satp/kjzc/zh/.*\\.html?")
 	rule2 := regexp.MustCompile("https?://www\\.most\\.gov\\.cn/tztg/.*\\.html?")
@@ -43,166 +39,100 @@ func (s *ScienceContentColly) kjzcCollector() *Rule {
 		rule2.String(),
 	))
 
-	c := colly.NewCollector(
-		colly.URLFilters(combinedRule),
-		colly.MaxDepth(0),
-	)
-
-	c.OnHTML("#Title", func(e *colly.HTMLElement) {
-		title := e.Text
-		regex := regexp.MustCompile(`[\n\t]`)
-		cleanedTitle := regex.ReplaceAllString(title, "")
-		fmt.Println(cleanedTitle)
-	})
-
-	c.OnHTML(".Custom_UnionStyle", func(e *colly.HTMLElement) {
-		//context := e.Text
-		//fmt.Println(context)
-	})
-
-	// 可自行决定是否要上存储
-	return &Rule{
-		r: combinedRule,
-		c: c,
+	hfTitle := &service.HtmlFunc{
+		QuerySelect: "#Title",
+		F:           service.NormalTitle,
 	}
+
+	hfContent := &service.HtmlFunc{
+		QuerySelect: ".Custom_UnionStyle",
+		F:           service.NormalContent,
+	}
+
+	return service.NormalRule(combinedRule, hfTitle, hfContent)
 }
 
-func (s *ScienceContentColly) kjbgzCollector() *Rule {
+func (s *ScienceContentColly) kjbgzCollector() *service.Rule {
 
 	rule := regexp.MustCompile("https?://www\\.most\\.gov\\.cn/kjbgz/.*\\.html?")
 
-	c := colly.NewCollector(
-		colly.URLFilters(rule),
-		colly.MaxDepth(0),
-	)
-
-	c.OnHTML("#Title", func(e *colly.HTMLElement) {
-		title := e.Text
-		regex := regexp.MustCompile(`[\n\t]`)
-		cleanedTitle := regex.ReplaceAllString(title, "")
-		fmt.Println(cleanedTitle)
-	})
-
-	c.OnHTML(".Zoom", func(e *colly.HTMLElement) {
-		//context := e.Text
-		//fmt.Println(context)
-	})
-
-	// 可自行决定是否要上存储
-	return &Rule{
-		r: rule,
-		c: c,
+	hfTitle := &service.HtmlFunc{
+		QuerySelect: "#Title",
+		F:           service.NormalTitle,
 	}
+
+	hfContent := &service.HtmlFunc{
+		QuerySelect: ".Zoom",
+		F:           service.NormalContent,
+	}
+
+	return service.NormalRule(rule, hfTitle, hfContent)
 }
 
-func (s *ScienceContentColly) zhengceCollector() *Rule {
+func (s *ScienceContentColly) zhengceCollector() *service.Rule {
 
 	rule := regexp.MustCompile("https?://www\\.gov\\.cn/zhengce/content/.*\\.html?")
 
-	c := colly.NewCollector(
-		colly.URLFilters(rule),
-		colly.MaxDepth(0),
-	)
-
-	c.OnHTML("td[colspan='3']", func(e *colly.HTMLElement) {
-		title := e.Text
-		regex := regexp.MustCompile(`[\n\t]`)
-		cleanedTitle := regex.ReplaceAllString(title, "")
-		fmt.Println(cleanedTitle)
-	})
-
-	c.OnHTML("#UCAP-CONTENT", func(e *colly.HTMLElement) {
-		//context := e.Text
-		//fmt.Println(context)
-	})
-
-	// 可自行决定是否要上存储
-	return &Rule{
-		r: rule,
-		c: c,
+	hfTitle := &service.HtmlFunc{
+		QuerySelect: "td[colspan='3']",
+		F:           service.NormalTitle,
 	}
+
+	hfContent := &service.HtmlFunc{
+		QuerySelect: "#UCAP-CONTENT",
+		F:           service.NormalContent,
+	}
+
+	return service.NormalRule(rule, hfTitle, hfContent)
 }
 
-func (s *ScienceContentColly) gongbaoCollector() *Rule {
+func (s *ScienceContentColly) gongbaoCollector() *service.Rule {
 
 	rule := regexp.MustCompile("https?://www\\.gov\\.cn/gongbao/content/.*\\.html?")
 
-	c := colly.NewCollector(
-		colly.URLFilters(rule),
-		colly.MaxDepth(0),
-	)
-
-	c.OnHTML(".share-title", func(e *colly.HTMLElement) {
-		title := e.Text
-		regex := regexp.MustCompile(`[\n\t]`)
-		cleanedTitle := regex.ReplaceAllString(title, "")
-		fmt.Println(cleanedTitle)
-	})
-
-	c.OnHTML(".pages_content", func(e *colly.HTMLElement) {
-		//context := e.Text
-		//fmt.Println(context)
-	})
-
-	// 可自行决定是否要上存储
-	return &Rule{
-		r: rule,
-		c: c,
+	hfTitle := &service.HtmlFunc{
+		QuerySelect: ".share-title",
+		F:           service.NormalTitle,
 	}
+
+	hfContent := &service.HtmlFunc{
+		QuerySelect: ".pages_content",
+		F:           service.NormalContent,
+	}
+
+	return service.NormalRule(rule, hfTitle, hfContent)
 }
 
-func (s *ScienceContentColly) xinwenCollector() *Rule {
+func (s *ScienceContentColly) xinwenCollector() *service.Rule {
 
 	rule := regexp.MustCompile("https?://www\\.gov\\.cn/xinwen/.*\\.html?")
 
-	c := colly.NewCollector(
-		colly.URLFilters(rule),
-		colly.MaxDepth(0),
-	)
-
-	c.OnHTML("#ti", func(e *colly.HTMLElement) {
-		title := e.Text
-		regex := regexp.MustCompile(`[\n\t]`)
-		cleanedTitle := regex.ReplaceAllString(title, "")
-		fmt.Println(cleanedTitle)
-	})
-
-	c.OnHTML(".pages_content", func(e *colly.HTMLElement) {
-		//context := e.Text
-		//fmt.Println(context)
-	})
-
-	// 可自行决定是否要上存储
-	return &Rule{
-		r: rule,
-		c: c,
+	hfTitle := &service.HtmlFunc{
+		QuerySelect: "#ti",
+		F:           service.NormalTitle,
 	}
+
+	hfContent := &service.HtmlFunc{
+		QuerySelect: ".pages_content",
+		F:           service.NormalContent,
+	}
+
+	return service.NormalRule(rule, hfTitle, hfContent)
 }
 
-func (s *ScienceContentColly) chinataxCollector() *Rule {
+func (s *ScienceContentColly) chinataxCollector() *service.Rule {
 
 	rule := regexp.MustCompile("https?://www\\.chinatax\\.gov\\.cn/.*\\.html?")
 
-	c := colly.NewCollector(
-		colly.URLFilters(rule),
-		colly.MaxDepth(0),
-	)
-
-	c.OnHTML("title", func(e *colly.HTMLElement) {
-		title := e.Text
-		regex := regexp.MustCompile(`[\n\t]`)
-		cleanedTitle := regex.ReplaceAllString(title, "")
-		fmt.Println(cleanedTitle)
-	})
-
-	c.OnHTML("#fontzoom", func(e *colly.HTMLElement) {
-		//context := e.Text
-		//fmt.Println(context)
-	})
-
-	// 可自行决定是否要上存储
-	return &Rule{
-		r: rule,
-		c: c,
+	hfTitle := &service.HtmlFunc{
+		QuerySelect: "title",
+		F:           service.NormalTitle,
 	}
+
+	hfContent := &service.HtmlFunc{
+		QuerySelect: "#fontzoom",
+		F:           service.NormalContent,
+	}
+
+	return service.NormalRule(rule, hfTitle, hfContent)
 }

@@ -5,8 +5,6 @@ import (
 	"PolicySearchEngine/model"
 	"PolicySearchEngine/service"
 	"fmt"
-	"github.com/gocolly/colly"
-	"regexp"
 )
 
 const (
@@ -15,23 +13,17 @@ const (
 )
 
 type EducationContentColly struct {
-	rules []*Rule
+	rules []*service.Rule
 	// 等待处理的url队列
 	waitQueue  *[]model.Meta
 	metaDal    *database.MetaDal
 	contentDal *database.ContentDal
 }
 
-// Rule 每个正则对应一个收集器
-type Rule struct {
-	r *regexp.Regexp
-	c *colly.Collector
-}
-
 func (s *EducationContentColly) Init() {
 	// 注册规则
 	s.rules = append(s.rules,
-		s.moe418Collector(),
+		s.zcfgCollector(),
 		s.srcsiteCollector(),
 	)
 	s.metaDal = &database.MetaDal{Db: database.MyDb()}
@@ -40,7 +32,7 @@ func (s *EducationContentColly) Init() {
 
 // Import 分批次导入
 func (s *EducationContentColly) Import() (success bool) {
-	// todo 暂时全量导入
+	// todo 1. 暂时全量导入 2. 监控时需要单独区分哪些读过
 	metaList := s.metaDal.GetAllMeta(departmentID, provinceID)
 	if metaList == nil || len(*metaList) == 0 {
 		return false
@@ -54,8 +46,8 @@ func (s *EducationContentColly) Run() {
 	dealMeta := func(meta *model.Meta) {
 		var match bool
 		for _, rule := range s.rules {
-			if rule.r.MatchString(meta.Url) {
-				if err := rule.c.Visit(meta.Url); err != nil {
+			if rule.R.MatchString(meta.Url) {
+				if err := rule.C.Visit(meta.Url); err != nil {
 					fmt.Println(err)
 				}
 				match = true
