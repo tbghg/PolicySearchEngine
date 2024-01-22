@@ -1,6 +1,7 @@
 package service
 
 import (
+	"PolicySearchEngine/utils"
 	"fmt"
 	"github.com/gocolly/colly"
 	"regexp"
@@ -29,13 +30,9 @@ func NormalRule(rule *regexp.Regexp, hfs ...*HtmlFunc) *Rule {
 }
 
 func NormalTitle(e *colly.HTMLElement) {
-	title := e.Text
-	regex := regexp.MustCompile(`[\n\t]`)
-	cleanedTitle := regex.ReplaceAllString(title, "")
-	fmt.Println(cleanedTitle)
+	fmt.Println(utils.TidyString(e.Text))
 }
 
 func NormalContent(e *colly.HTMLElement) {
-	//context := e.Text
-	//fmt.Println(context)
+	//fmt.Println(e.Text)
 }

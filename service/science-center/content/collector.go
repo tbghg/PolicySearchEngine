@@ -2,30 +2,31 @@ package content
 
 import (
 	"PolicySearchEngine/service"
+	"PolicySearchEngine/utils"
 	"fmt"
 	"github.com/gocolly/colly"
 	"regexp"
 )
 
+func (s *ScienceContentColly) updateTitle(e *colly.HTMLElement) {
+	title := utils.TidyString(e.Text)
+	s.metaDal.UpdateMetaTitle(title, e.Request.URL.String())
+}
+
 func (s *ScienceContentColly) xxgkCollector() *service.Rule {
 	rule := regexp.MustCompile("https?://www\\.most\\.gov\\.cn/xxgk/.*\\.html?")
 
-	hf := &service.HtmlFunc{
-		QuerySelect: ".xxgk_detail_content",
-		F: func(e *colly.HTMLElement) {
-			//fmt.Println(e.DOM.Html())
-
-			title := e.ChildText(".xxgk_title")
-			regex := regexp.MustCompile(`[\n\t]`)
-			cleanedTitle := regex.ReplaceAllString(title, "")
-			fmt.Println(cleanedTitle)
-
-			//content := e.ChildText("#Zoom")
-			//fmt.Println(content)
-		},
+	hfTitle := &service.HtmlFunc{
+		QuerySelect: ".xxgk_title",
+		F:           s.updateTitle,
 	}
 
-	return service.NormalRule(rule, hf)
+	hfContent := &service.HtmlFunc{
+		QuerySelect: "#Zoom",
+		F:           service.NormalContent,
+	}
+
+	return service.NormalRule(rule, hfTitle, hfContent)
 }
 
 func (s *ScienceContentColly) kjzcCollector() *service.Rule {
@@ -41,7 +42,7 @@ func (s *ScienceContentColly) kjzcCollector() *service.Rule {
 
 	hfTitle := &service.HtmlFunc{
 		QuerySelect: "#Title",
-		F:           service.NormalTitle,
+		F:           s.updateTitle,
 	}
 
 	hfContent := &service.HtmlFunc{
@@ -58,7 +59,7 @@ func (s *ScienceContentColly) kjbgzCollector() *service.Rule {
 
 	hfTitle := &service.HtmlFunc{
 		QuerySelect: "#Title",
-		F:           service.NormalTitle,
+		F:           s.updateTitle,
 	}
 
 	hfContent := &service.HtmlFunc{
@@ -75,7 +76,7 @@ func (s *ScienceContentColly) zhengceCollector() *service.Rule {
 
 	hfTitle := &service.HtmlFunc{
 		QuerySelect: "td[colspan='3']",
-		F:           service.NormalTitle,
+		F:           s.updateTitle,
 	}
 
 	hfContent := &service.HtmlFunc{
@@ -92,7 +93,7 @@ func (s *ScienceContentColly) gongbaoCollector() *service.Rule {
 
 	hfTitle := &service.HtmlFunc{
 		QuerySelect: ".share-title",
-		F:           service.NormalTitle,
+		F:           s.updateTitle,
 	}
 
 	hfContent := &service.HtmlFunc{
@@ -109,7 +110,7 @@ func (s *ScienceContentColly) xinwenCollector() *service.Rule {
 
 	hfTitle := &service.HtmlFunc{
 		QuerySelect: "#ti",
-		F:           service.NormalTitle,
+		F:           s.updateTitle,
 	}
 
 	hfContent := &service.HtmlFunc{
@@ -126,7 +127,7 @@ func (s *ScienceContentColly) chinataxCollector() *service.Rule {
 
 	hfTitle := &service.HtmlFunc{
 		QuerySelect: "title",
-		F:           service.NormalTitle,
+		F:           s.updateTitle,
 	}
 
 	hfContent := &service.HtmlFunc{

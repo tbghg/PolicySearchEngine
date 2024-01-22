@@ -27,15 +27,14 @@ func (m *MetaDal) InsertMeta(date time.Time, title string, url string, departmen
 	}
 }
 
-func (m *MetaDal) UpdateMeta(date time.Time, title string, url string) {
+func (m *MetaDal) UpdateMetaTitle(title string, url string) {
 	meta := model.Meta{
-		Date:  date,
 		Title: title,
 		Url:   url,
 	}
 	result := m.Db.Where(model.Meta{Url: meta.Url}).Updates(&meta)
 	if result.Error != nil {
-		fmt.Printf("UpdateMeta... %s, %v", date.String(), meta)
+		fmt.Printf("UpdateMeta... %v", meta)
 		log.Fatal(result.Error)
 	}
 }

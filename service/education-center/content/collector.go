@@ -2,8 +2,15 @@ package content
 
 import (
 	"PolicySearchEngine/service"
+	"PolicySearchEngine/utils"
+	"github.com/gocolly/colly"
 	"regexp"
 )
+
+func (s *EducationContentColly) updateTitle(e *colly.HTMLElement) {
+	title := utils.TidyString(e.Text)
+	s.metaDal.UpdateMetaTitle(title, e.Request.URL.String())
+}
 
 func (s *EducationContentColly) zcfgCollector() *service.Rule {
 
@@ -11,7 +18,7 @@ func (s *EducationContentColly) zcfgCollector() *service.Rule {
 
 	hfTitle := &service.HtmlFunc{
 		QuerySelect: ".moe-detail-box h1",
-		F:           service.NormalTitle,
+		F:           s.updateTitle,
 	}
 
 	hfContent := &service.HtmlFunc{
@@ -28,7 +35,7 @@ func (s *EducationContentColly) srcsiteCollector() *service.Rule {
 
 	hfTitle := &service.HtmlFunc{
 		QuerySelect: ".details-policy-box h1",
-		F:           service.NormalTitle,
+		F:           s.updateTitle,
 	}
 
 	hfContent := &service.HtmlFunc{
