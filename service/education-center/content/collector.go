@@ -5,6 +5,7 @@ import (
 	"PolicySearchEngine/utils"
 	"github.com/gocolly/colly"
 	"regexp"
+	"strings"
 )
 
 func (s *EducationContentColly) getRules() []*service.Rule {
@@ -19,6 +20,18 @@ func (s *EducationContentColly) updateTitle(e *colly.HTMLElement) {
 	s.metaDal.UpdateMetaTitle(title, e.Request.URL.String())
 }
 
+func (s *EducationContentColly) updateContent(e *colly.HTMLElement) {
+	var text []byte
+	e.ForEach("*", func(_ int, child *colly.HTMLElement) {
+		label := strings.ToLower(child.Name)
+		if label == "style" || label == "table" || label == "script" {
+			return
+		}
+		text = append(text, []byte(child.Text)...)
+	})
+	s.contentDal.InsertContent(e.Request.URL.String(), string(text))
+}
+
 func (s *EducationContentColly) zcfgCollector() *service.Rule {
 
 	rule := regexp.MustCompile("https?://www\\.moe\\.gov\\.cn/jyb_sjzl/sjzl_zcfg/.*\\.html?")
@@ -30,7 +43,7 @@ func (s *EducationContentColly) zcfgCollector() *service.Rule {
 
 	hfContent := &service.HtmlFunc{
 		QuerySelect: ".TRS_Editor",
-		F:           service.NormalContent,
+		F:           s.updateContent,
 	}
 
 	return service.NormalRule(rule, hfTitle, hfContent)
@@ -47,7 +60,7 @@ func (s *EducationContentColly) srcsiteCollector() *service.Rule {
 
 	hfContent := &service.HtmlFunc{
 		QuerySelect: ".details-policy-box",
-		F:           service.NormalContent,
+		F:           s.updateContent,
 	}
 
 	return service.NormalRule(rule, hfTitle, hfContent)

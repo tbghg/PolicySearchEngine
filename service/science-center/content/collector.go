@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gocolly/colly"
 	"regexp"
+	"strings"
 )
 
 func (s *ScienceContentColly) getRules() []*service.Rule {
@@ -25,6 +26,18 @@ func (s *ScienceContentColly) updateTitle(e *colly.HTMLElement) {
 	s.metaDal.UpdateMetaTitle(title, e.Request.URL.String())
 }
 
+func (s *ScienceContentColly) updateContent(e *colly.HTMLElement) {
+	var text []byte
+	e.ForEach("*", func(_ int, child *colly.HTMLElement) {
+		label := strings.ToLower(child.Name)
+		if label == "style" || label == "table" || label == "script" {
+			return
+		}
+		text = append(text, []byte(child.Text)...)
+	})
+	s.contentDal.InsertContent(e.Request.URL.String(), string(text))
+}
+
 func (s *ScienceContentColly) xxgkCollector() *service.Rule {
 	rule := regexp.MustCompile("https?://www\\.most\\.gov\\.cn/xxgk/.*\\.html?")
 
@@ -35,7 +48,7 @@ func (s *ScienceContentColly) xxgkCollector() *service.Rule {
 
 	hfContent := &service.HtmlFunc{
 		QuerySelect: "#Zoom",
-		F:           service.NormalContent,
+		F:           s.updateContent,
 	}
 
 	return service.NormalRule(rule, hfTitle, hfContent)
@@ -58,8 +71,8 @@ func (s *ScienceContentColly) kjzcCollector() *service.Rule {
 	}
 
 	hfContent := &service.HtmlFunc{
-		QuerySelect: ".Custom_UnionStyle",
-		F:           service.NormalContent,
+		QuerySelect: "#Zoom",
+		F:           s.updateContent,
 	}
 
 	return service.NormalRule(combinedRule, hfTitle, hfContent)
@@ -75,8 +88,8 @@ func (s *ScienceContentColly) kjbgzCollector() *service.Rule {
 	}
 
 	hfContent := &service.HtmlFunc{
-		QuerySelect: ".Zoom",
-		F:           service.NormalContent,
+		QuerySelect: "#Zoom",
+		F:           s.updateContent,
 	}
 
 	return service.NormalRule(rule, hfTitle, hfContent)
@@ -93,7 +106,7 @@ func (s *ScienceContentColly) zhengceCollector() *service.Rule {
 
 	hfContent := &service.HtmlFunc{
 		QuerySelect: "#UCAP-CONTENT",
-		F:           service.NormalContent,
+		F:           s.updateContent,
 	}
 
 	return service.NormalRule(rule, hfTitle, hfContent)
@@ -110,7 +123,7 @@ func (s *ScienceContentColly) gongbaoCollector() *service.Rule {
 
 	hfContent := &service.HtmlFunc{
 		QuerySelect: ".pages_content",
-		F:           service.NormalContent,
+		F:           s.updateContent,
 	}
 
 	return service.NormalRule(rule, hfTitle, hfContent)
@@ -127,7 +140,7 @@ func (s *ScienceContentColly) xinwenCollector() *service.Rule {
 
 	hfContent := &service.HtmlFunc{
 		QuerySelect: ".pages_content",
-		F:           service.NormalContent,
+		F:           s.updateContent,
 	}
 
 	return service.NormalRule(rule, hfTitle, hfContent)
@@ -144,7 +157,7 @@ func (s *ScienceContentColly) chinataxCollector() *service.Rule {
 
 	hfContent := &service.HtmlFunc{
 		QuerySelect: "#fontzoom",
-		F:           service.NormalContent,
+		F:           s.updateContent,
 	}
 
 	return service.NormalRule(rule, hfTitle, hfContent)

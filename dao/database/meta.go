@@ -34,7 +34,7 @@ func (m *MetaDal) UpdateMetaTitle(title string, url string) {
 	}
 	result := m.Db.Where(model.Meta{Url: meta.Url}).Updates(&meta)
 	if result.Error != nil {
-		fmt.Printf("UpdateMeta... %v", meta)
+		fmt.Printf("UpdateMetaTitle... %v", meta)
 		log.Fatal(result.Error)
 	}
 }
