@@ -47,7 +47,7 @@ func (s *EducationMetaColly) Init() {
 }
 
 func (s *EducationMetaColly) PageTraverse() {
-	// todo 暂时写死，等待后续优化
+
 	page := []string{
 		"http://www.moe.gov.cn/jyb_sjzl/sjzl_zcfg/moe_418/index.html",     // 宪法
 		"http://www.moe.gov.cn/jyb_sjzl/sjzl_zcfg/zcfg_jyfl/index.html",   // 教育法规
@@ -81,7 +81,7 @@ func (s *EducationMetaColly) PageTraverse() {
 
 func (s *EducationMetaColly) Operate() {
 
-	redis.SetRedisStorage(s.c, "meta-sci", s.startPages)
+	redis.SetRedisStorage(s.c, "meta-edu", s.startPages)
 
 	s.c.OnHTML(".moe-list ul li", func(e *colly.HTMLElement) {
 

@@ -10,3 +10,4 @@ redis:
 cron: # 定时运行时间
   science-center: "00 10 * * *"  # 中央科技部
   education-center: "00 11 * * *"  # 中央教育部
+  industryInformatization-center: "00 12 * * *"  # 中央工信部

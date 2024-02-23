@@ -4,8 +4,7 @@ import (
 	"PolicySearchEngine/config"
 	"PolicySearchEngine/dao/database"
 	"PolicySearchEngine/service"
-	"PolicySearchEngine/service/education-center"
-	"PolicySearchEngine/service/science-center"
+	"PolicySearchEngine/service/industryInformatization-center"
 )
 
 func main() {
@@ -16,11 +15,14 @@ func main() {
 
 	var crawler service.Crawlers
 
-	var scienceColly science_center.ScienceColly
-	scienceColly.Register(&crawler)
+	//var scienceColly science_center.ScienceColly
+	//scienceColly.Register(&crawler)
+	//
+	//var educationColly education_center.EducationColly
+	//educationColly.Register(&crawler)
 
-	var educationColly education_center.EducationColly
-	educationColly.Register(&crawler)
+	var industryInformatizationColly industryInformatization_center.IndustryInformatizationColly
+	industryInformatizationColly.Register(&crawler)
 
 	crawler.Run()
 }
