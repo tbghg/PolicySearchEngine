@@ -13,22 +13,16 @@ const (
 )
 
 func Router() {
-	// 创建一个默认的Gin引擎
 	router := gin.Default()
-
-	// GET请求处理程序
 	router.GET("/search", searchHandel)
-
-	// 启动HTTP服务器，监听端口8080
 	if err := router.Run(":8080"); err != nil {
 		fmt.Printf("router.Run Failed, err:%+v\n", err)
 	}
 }
 
 func searchHandel(c *gin.Context) {
-	// 获取查询参数
-	searchQuery := c.Query("s")
 
+	searchQuery := c.Query("s")
 	sDepartmentID := c.Query("did")
 	sProvinceID := c.Query("pid")
 	sPage := c.Query("page")
