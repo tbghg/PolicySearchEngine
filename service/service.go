@@ -35,7 +35,6 @@ func (c *Crawlers) Run() {
 		}
 	}
 	cr.Start()
-	select {}
 }
 
 // Register 新部门加入Crawler

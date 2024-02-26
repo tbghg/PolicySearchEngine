@@ -51,3 +51,15 @@ func (m *MetaDal) GetAllMeta(departmentID, provinceID uint) *[]model.Meta {
 	}
 	return &metaList
 }
+
+func (m *MetaDal) GetMetaByUrl(url string) *model.Meta {
+	var meta model.Meta
+	result := m.Db.Where(model.Meta{
+		Url: url,
+	}).First(&meta)
+	if result.Error != nil {
+		fmt.Printf("读取数据失败: %v\n", result.Error)
+		return nil
+	}
+	return &meta
+}

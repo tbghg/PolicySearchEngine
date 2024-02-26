@@ -1,6 +1,7 @@
 package content
 
 import (
+	"PolicySearchEngine/dao/es"
 	"PolicySearchEngine/service"
 	"PolicySearchEngine/utils"
 	"github.com/gocolly/colly"
@@ -30,6 +31,9 @@ func (s *EducationContentColly) updateContent(e *colly.HTMLElement) {
 		text = append(text, []byte(child.Text)...)
 	})
 	s.contentDal.InsertContent(e.Request.URL.String(), string(text))
+
+	meta := s.metaDal.GetMetaByUrl(e.Request.URL.String())
+	es.IndexDoc(meta.Date, meta.DepartmentID, meta.ProvinceID, meta.Title, meta.Url, string(text))
 }
 
 func (s *EducationContentColly) zcfgCollector() *service.Rule {

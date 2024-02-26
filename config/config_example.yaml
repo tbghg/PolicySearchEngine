@@ -7,6 +7,9 @@ redis:
   addr: "localhost:6379" # redis地址
   password: "password" # redis密码
   db: 0             # redis数据库
+es:
+  addr: "http://localhost:9200"
+  index: "policy_search_engine"
 cron: # 定时运行时间
   science-center: "00 10 * * *"  # 中央科技部
   education-center: "00 11 * * *"  # 中央教育部
