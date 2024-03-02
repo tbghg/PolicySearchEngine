@@ -1,0 +1,88 @@
+.search-container {
+  width: 80%;
+  margin: auto;
+  padding-top: 20px;
+}
+
+.search-form {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 1; /* 将搜索框的宽度设置为剩余空间的100% */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 5px; /* 设置右侧外边距 */
+}
+
+.search-button {
+  flex: 0 0 auto; /* 防止按钮被拉伸 */
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+.search-button:hover {
+  background-color: #0056b3;
+}
+
+.search-results {
+  list-style-type: none;
+  padding: 0;
+}
+
+.search-result {
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  padding: 20px;
+}
+
+.result-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.result-title:hover {
+  text-decoration: underline;
+}
+
+.result-date {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.result-content {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.highlight {
+  background-color: yellow; /* 修改关键字高亮颜色 */
+}
+
+.search-select {
+  flex: 0 0 auto; /* 防止多选框被拉伸 */
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-bottom: 10px; /* 设置下方外边距 */
+}
+
+.search-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
