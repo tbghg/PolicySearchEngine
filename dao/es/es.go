@@ -74,6 +74,18 @@ func SearchDoc(searchQuery string, departmentID, provinceID, from, size int) *mo
 		mustQueries = append(mustQueries, fmt.Sprintf(`{ "term": { "province_id": %d }}`, provinceID))
 	}
 
+	// 构建高亮查询
+	highlight := `
+	{
+		"fields": {
+			"title": {},
+			"content": {}
+		},
+		"fragment_size": 50,
+		"pre_tags": ["<em style='color:red'>"],
+		"post_tags": ["</em>"]
+	}`
+
 	query := `
 	{
 		"query": {
@@ -87,10 +99,11 @@ func SearchDoc(searchQuery string, departmentID, provinceID, from, size int) *mo
 			{ "date": { "order": "asc" }}
 		],
 		"from": %d,
-		"size": %d
+		"size": %d,
+		"highlight": %s
 	}`
 
-	query = fmt.Sprintf(query, strings.Join(mustQueries, ","), from, size)
+	query = fmt.Sprintf(query, strings.Join(mustQueries, ","), from-1, size, highlight)
 
 	searchResult, err := es.Search(
 		es.Search.WithIndex(index),

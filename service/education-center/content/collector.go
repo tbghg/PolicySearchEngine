@@ -33,7 +33,10 @@ func (s *EducationContentColly) updateContent(e *colly.HTMLElement) {
 	s.contentDal.InsertContent(e.Request.URL.String(), string(text))
 
 	meta := s.metaDal.GetMetaByUrl(e.Request.URL.String())
-	es.IndexDoc(meta.Date, meta.DepartmentID, meta.ProvinceID, meta.Title, meta.Url, string(text))
+	if meta != nil {
+		es.IndexDoc(meta.Date, meta.DepartmentID, meta.ProvinceID, meta.Title, meta.Url, string(text))
+		return
+	}
 }
 
 func (s *EducationContentColly) zcfgCollector() *service.Rule {

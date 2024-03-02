@@ -31,7 +31,7 @@ func searchHandel(c *gin.Context) {
 	departmentID, err2 := strconv.Atoi(sDepartmentID)
 	provinceID, err3 := strconv.Atoi(sProvinceID)
 	if err1 != nil || err2 != nil || err3 != nil {
-		fmt.Printf("Get请求参数错误\n")
+		fmt.Printf("Get请求参数错误\n，err1:%+v，err2:%+v，err3:%+v", err1, err2, err3)
 		return
 	}
 

@@ -21,7 +21,7 @@ func (c *Crawlers) Run() {
 
 		// todo 先运行一遍，防止本来就有问题，代码稳定后可删除
 		//meta.ExecuteWorkflow()
-		content.ExecuteWorkflow()
+		//content.ExecuteWorkflow()
 
 		spec := config.V.GetString("cron." + c.Name)
 		_, err := cr.AddFunc(spec, func() {

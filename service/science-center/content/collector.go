@@ -1,6 +1,7 @@
 package content
 
 import (
+	"PolicySearchEngine/dao/es"
 	"PolicySearchEngine/service"
 	"PolicySearchEngine/utils"
 	"fmt"
@@ -36,6 +37,11 @@ func (s *ScienceContentColly) updateContent(e *colly.HTMLElement) {
 		text = append(text, []byte(child.Text)...)
 	})
 	s.contentDal.InsertContent(e.Request.URL.String(), string(text))
+
+	meta := s.metaDal.GetMetaByUrl(e.Request.URL.String())
+	if meta != nil {
+		es.IndexDoc(meta.Date, meta.DepartmentID, meta.ProvinceID, meta.Title, meta.Url, string(text))
+	}
 }
 
 func (s *ScienceContentColly) xxgkCollector() *service.Rule {

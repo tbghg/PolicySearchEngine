@@ -2,7 +2,6 @@ package meta
 
 import (
 	"PolicySearchEngine/dao/database"
-	"PolicySearchEngine/dao/redis"
 	"PolicySearchEngine/service"
 	"PolicySearchEngine/utils"
 	"errors"
@@ -81,7 +80,7 @@ func (s *EducationMetaColly) PageTraverse() {
 
 func (s *EducationMetaColly) Operate() {
 
-	redis.SetRedisStorage(s.c, "meta-edu", s.startPages)
+	//redis.SetRedisStorage(s.c, "meta-edu", s.startPages)
 
 	s.c.OnHTML(".moe-list ul li", func(e *colly.HTMLElement) {
 

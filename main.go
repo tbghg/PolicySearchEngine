@@ -19,12 +19,12 @@ func main() {
 
 	//var scienceColly science_center.ScienceColly
 	//scienceColly.Register(&crawler)
-
-	//var educationColly education_center.EducationColly
-	//educationColly.Register(&crawler)
-
+	//
 	//var industryInformatizationColly industryInformatization_center.IndustryInformatizationColly
 	//industryInformatizationColly.Register(&crawler)
+	//
+	//var educationColly education_center.EducationColly
+	//educationColly.Register(&crawler)
 
 	crawler.Run()
 	http.Router()
