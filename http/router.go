@@ -1,10 +1,14 @@
 package http
 
 import (
+	"PolicySearchEngine/config"
 	"PolicySearchEngine/dao/es"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -41,8 +45,42 @@ func searchHandel(c *gin.Context) {
 		return
 	}
 
-	esResp := es.SearchDoc(searchQuery, departmentID, provinceID, page, size)
+	esResp := es.SearchDoc(preSearch(searchQuery), departmentID, provinceID, page, size)
 	//totalPage := math.Ceil(float64(esResp.Hits.Total.Value) / size)
 
 	c.JSON(http.StatusOK, esResp.Hits)
+}
+
+func preSearch(s string) string {
+
+	preSearchUrl := config.V.GetString("http.pre-search-url") + url.QueryEscape(s)
+	resp, err := http.Get(preSearchUrl)
+	if err != nil {
+		fmt.Println("Error occurred while sending GET request:", err)
+		return s
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error reading response body:", err)
+		return s
+	}
+
+	var r struct {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}
+	err = json.Unmarshal(body, &r)
+	if err != nil {
+		fmt.Println("Error unmarshalling JSON:", err)
+		return s
+	}
+
+	if resp.StatusCode == http.StatusOK && r.Code == 200 {
+		return r.Message
+	} else {
+		fmt.Printf("Non-200 status code: %d\n, resp:%+v", resp.StatusCode, r)
+	}
+	return s
 }

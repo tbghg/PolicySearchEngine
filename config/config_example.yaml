@@ -7,6 +7,8 @@ redis:
   addr: "localhost:6379" # redis地址
   password: "password" # redis密码
   db: 0             # redis数据库
+http:
+  pre-search_url:"http://127.0.0.1:5000/api?message="
 es:
   addr: "http://localhost:9200"
   index: "policy_search_engine"
