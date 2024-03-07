@@ -2,6 +2,19 @@ from http import HTTPStatus
 from flask import Flask, jsonify, request
 import dashscope
 
+import os
+import yaml
+
+
+def get_api_key():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(current_dir, '../config/config.yaml')
+    with open(config_path, encoding='utf-8') as file:
+        config_data = yaml.safe_load(file)
+        api_key = config_data.get('http', {}).get('api-key')
+        return api_key
+
+
 app = Flask(__name__)
 
 
@@ -33,7 +46,7 @@ def call_with_prompt(msg):
     response = dashscope.Generation.call(
         model=dashscope.Generation.Models.qwen_max,
         messages=messages,
-        api_key='sk-465a87192e604f7d9e24fc4bd723bd0a'
+        api_key=get_api_key()
     )
     if response.status_code == HTTPStatus.OK:
         print(response.output)
