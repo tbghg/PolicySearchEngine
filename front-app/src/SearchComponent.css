@@ -86,3 +86,20 @@
   border-color: #007bff;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
+
+.result-source-tag {
+  font-size: 0.8em; /* 调整字体大小 */
+  color: #999; /* 设置灰色字体颜色 */
+  display: flex;
+  align-items: center;
+  gap: 0.5em; /* 控制省份与部门之间的间距 */
+}
+
+.result-province,
+.result-department {
+  background-color: #eee; /* 设置背景色 */
+  padding: 0.2em 0.5em; /* 边距内填充 */
+  border-radius: 0.25em; /* 圆角 */
+  margin-right: 0.25em; /* 右侧间距 */
+  white-space: nowrap; /* 防止换行 */
+}
