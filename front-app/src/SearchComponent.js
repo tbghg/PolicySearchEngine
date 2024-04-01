@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Pagination } from 'antd'; // 导入 Pagination 组件
+import { Pagination, Modal } from 'antd'; // 导入 Pagination 和 Modal 组件
 import './SearchComponent.css';
 
 // 假设我们有以下省份和部门的数据结构
@@ -64,6 +64,8 @@ const SearchComponent = () => {
     const [results, setResults] = useState([]);
     const [currentPage, setCurrentPage] = useState(1); // 将当前页数初始值设为 1
     const [total, setTotal] = useState(0); // 总条目数
+    const [summary, setSummary] = useState(''); // 添加摘要内容的状态
+    const [showSummaryModal, setShowSummaryModal] = useState(false); // 添加显示摘要的状态
 
     useEffect(() => {
         fetchData();
@@ -113,6 +115,26 @@ const SearchComponent = () => {
         setCurrentPage(page); // 当分页改变时更新当前页数
     };
 
+    const generateSummary = async (url) => {
+        console.log(url)
+        try {
+            const response = await fetch(`http://localhost:3000/summary?url=${encodeURIComponent(url)}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setSummary(data.summary); // 更新摘要内容状态
+            setShowSummaryModal(true); // 显示摘要弹出框
+        } catch (error) {
+            console.error('Error fetching summary:', error);
+        }
+    };
+
+    const handleResetSummary = () => {
+        setSummary(''); // 清空摘要内容状态
+        setShowSummaryModal(false); // 关闭摘要弹出框
+    };
+
     return (
         <div className="search-container">
             <form onSubmit={handleSubmit} className="search-form">
@@ -136,6 +158,7 @@ const SearchComponent = () => {
                     <li key={index} className="search-result">
                         <a href={result._source.url} target="_blank" rel="noopener noreferrer"
                            className="result-title">{result._source.title}</a>
+                        <button onClick={() => generateSummary(result._source.url)} className="generate-summary-button">生成摘要</button>
                         <p className="result-date">Date: {formatDate(result._source.date)}</p>
                         <p className="result-content" dangerouslySetInnerHTML={{__html: result.highlight.content}}/>
                         <p className="result-source-tag">
@@ -150,6 +173,16 @@ const SearchComponent = () => {
                         current={currentPage}
                         total={total}
                         style={{marginTop: '20px', marginBottom: '20px', textAlign: 'center' }} />
+
+            {/* 弹出框 */}
+            <Modal
+                title="摘要内容"
+                visible={showSummaryModal}
+                onCancel={handleResetSummary}
+                footer={null}
+            >
+                <p>{summary}</p>
+            </Modal>
         </div>
     );
 };

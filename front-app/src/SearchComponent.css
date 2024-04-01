@@ -103,3 +103,32 @@
   margin-right: 0.25em; /* 右侧间距 */
   white-space: nowrap; /* 防止换行 */
 }
+
+.search-result {
+  position: relative;
+  border: 1px solid #ccc; /* 为搜索结果容器添加边框 */
+  padding: 10px; /* 为搜索结果容器添加内边距 */
+  margin-bottom: 20px; /* 设置搜索结果容器之间的垂直间距 */
+}
+
+.generate-summary-button {
+  position: absolute;
+  top: 5px; /* 距离搜索结果容器顶部的距离 */
+  right: 5px; /* 距离搜索结果容器右侧的距离 */
+  background-color: #1890ff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.generate-summary-button:hover {
+  background-color: #40a9ff;
+}
+
+.ant-modal-body {
+  overflow-y: auto; /* 设置内容过多时可滚动 */
+  max-height: 300px; /* 设置最大高度 */
+}

@@ -8,7 +8,8 @@ redis:
   password: "password" # redis密码
   db: 0             # redis数据库
 http:
-  pre-search_url: "http://127.0.0.1:5000/api?message="
+  pre-search-url: "http://127.0.0.1:5000/api/search?message="
+  doc-summary-url: "http://127.0.0.1:5000/api/summary"
   api-key: api-key
 es:
   addr: "http://localhost:9200"

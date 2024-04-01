@@ -37,3 +37,13 @@ func (c *ContentDal) InsertContent(url string, article string) {
 		fmt.Printf("插入Content记录失败 err:%+v", result.Error)
 	}
 }
+
+func (c *ContentDal) GetContentByMetaID(id uint) *model.Content {
+	var content model.Content
+	result := c.Db.Where(model.Content{MetaID: id}).First(&content)
+	if result.Error != nil {
+		fmt.Printf("读取文章内容失败: %v\n", result.Error)
+		return nil
+	}
+	return &content
+}

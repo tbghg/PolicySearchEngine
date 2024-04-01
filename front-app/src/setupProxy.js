@@ -6,6 +6,10 @@ module.exports = function (app) {
             target: 'http://localhost:8080',
             changeOrigin: true
         }),
+        createProxyMiddleware('/summary', {
+            target: 'http://localhost:8080',
+            changeOrigin: true
+        }),
         createProxyMiddleware('/api2', {
             target: 'http://localhost:5001',
             changeOrigin: true,
