@@ -6,6 +6,7 @@ import (
 	mysqlCfg "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
 	"time"
 )
@@ -18,6 +19,8 @@ func InitTable() {
 	_ = myDb.AutoMigrate(&model.Content{})
 	_ = myDb.AutoMigrate(&model.Department{})
 	_ = myDb.AutoMigrate(&model.Province{})
+	_ = myDb.AutoMigrate(&model.SmallDepartmentMap{})
+	_ = myDb.AutoMigrate(&model.SmallDepartment{})
 }
 
 func Init() {
@@ -35,7 +38,10 @@ func Init() {
 	}
 
 	// 连接数据库
-	db, err := gorm.Open(mysql.Open(cfg.FormatDSN()))
+	db, err := gorm.Open(mysql.Open(cfg.FormatDSN()),
+		&gorm.Config{
+			Logger: logger.Default.LogMode(logger.Error),
+		})
 	if err != nil {
 		log.Fatal(err)
 	}

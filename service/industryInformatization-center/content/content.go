@@ -18,6 +18,7 @@ type IndustryInformatizationContentColly struct {
 	waitQueue  *[]model.Meta
 	metaDal    *database.MetaDal
 	contentDal *database.ContentDal
+	dMapDal    *database.SmallDepartmentMapDal
 }
 
 func (s *IndustryInformatizationContentColly) Init() {
@@ -25,6 +26,7 @@ func (s *IndustryInformatizationContentColly) Init() {
 	s.rules = append(s.rules, s.getRules()...)
 	s.metaDal = &database.MetaDal{Db: database.MyDb()}
 	s.contentDal = &database.ContentDal{Db: database.MyDb()}
+	s.dMapDal = &database.SmallDepartmentMapDal{Db: database.MyDb()}
 }
 
 // Import 分批次导入

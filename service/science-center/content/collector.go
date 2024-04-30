@@ -39,8 +39,12 @@ func (s *ScienceContentColly) updateContent(e *colly.HTMLElement) {
 	s.contentDal.InsertContent(e.Request.URL.String(), string(text))
 
 	meta := s.metaDal.GetMetaByUrl(e.Request.URL.String())
+	if meta == nil {
+		meta = s.metaDal.GetMetaByUrl(e.Request.Headers.Get("Referer"))
+	}
 	if meta != nil {
-		es.IndexDoc(meta.Date, meta.DepartmentID, meta.ProvinceID, meta.Title, meta.Url, string(text))
+		sdIDs := s.dMapDal.GetDepartmentIDsByMetaID(meta.ID)
+		es.IndexDoc(meta.Date, meta.DepartmentID, meta.ProvinceID, meta.Title, meta.Url, string(text), sdIDs)
 	}
 }
 

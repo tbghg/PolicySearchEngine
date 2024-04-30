@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	initPage     = "http://www.moe.gov.cn/jyb_sjzl/sjzl_zcfg/moe_418/index.html"
-	departmentID = 2  // 教育部
-	provinceID   = 35 // 中央
+	initPage          = "http://www.moe.gov.cn/jyb_sjzl/sjzl_zcfg/moe_418/index.html"
+	departmentID      = 2  // 教育部
+	smallDepartmentID = 2  // 教育部
+	provinceID        = 35 // 中央
 )
 
 type EducationMetaColly struct {
@@ -21,6 +22,7 @@ type EducationMetaColly struct {
 	// 遍历起始页
 	startPages []string
 	metaDal    *database.MetaDal
+	dMapDal    *database.SmallDepartmentMapDal
 }
 
 func (s *EducationMetaColly) Init() {
@@ -43,6 +45,7 @@ func (s *EducationMetaColly) Init() {
 	)
 
 	s.metaDal = &database.MetaDal{Db: database.MyDb()}
+	s.dMapDal = &database.SmallDepartmentMapDal{Db: database.MyDb()}
 }
 
 func (s *EducationMetaColly) PageTraverse() {
@@ -103,7 +106,8 @@ func (s *EducationMetaColly) Operate() {
 			return
 		}
 
-		s.metaDal.InsertMeta(dateTime, title, url, departmentID, provinceID)
+		metaID := s.metaDal.InsertMeta(dateTime, title, url, departmentID, provinceID)
+		s.dMapDal.InsertDID(metaID, smallDepartmentID)
 
 		fmt.Printf("Link found: %s %q -> %s\n\n", date, title, url)
 	})

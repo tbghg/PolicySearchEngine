@@ -6,6 +6,7 @@ import (
 	"PolicySearchEngine/dao/es"
 	"PolicySearchEngine/http"
 	"PolicySearchEngine/service"
+	"PolicySearchEngine/service/externalSources"
 )
 
 func main() {
@@ -19,12 +20,18 @@ func main() {
 
 	//var scienceColly science_center.ScienceColly
 	//scienceColly.Register(&crawler)
-	//
+
 	//var industryInformatizationColly industryInformatization_center.IndustryInformatizationColly
 	//industryInformatizationColly.Register(&crawler)
-	//
+
 	//var educationColly education_center.EducationColly
 	//educationColly.Register(&crawler)
+
+	//var stateCouncilColly stateCouncil_center.StateCouncilColly
+	//stateCouncilColly.Register(&crawler)
+
+	var externalSourcesColly externalSources.ExternalSourcesColly
+	externalSourcesColly.Register(&crawler)
 
 	crawler.Run()
 	http.Router()

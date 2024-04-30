@@ -8,6 +8,7 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gocolly/colly v1.2.0
+	github.com/pkg/errors v0.9.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.18.2
 	gorm.io/driver/mysql v1.5.2

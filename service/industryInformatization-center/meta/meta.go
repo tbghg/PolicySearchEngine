@@ -13,8 +13,9 @@ import (
 )
 
 const (
-	departmentID = 3  // 工信部
-	provinceID   = 35 // 中央
+	departmentID      = 3  // 工信部
+	smallDepartmentID = 3  // 工信部
+	provinceID        = 35 // 中央
 )
 
 type IndustryInformatizationMetaColly struct {
@@ -23,10 +24,12 @@ type IndustryInformatizationMetaColly struct {
 	startPages  []string
 	currentPage string
 	metaDal     *database.MetaDal
+	dMapDal     *database.SmallDepartmentMapDal
 }
 
 func (s *IndustryInformatizationMetaColly) Init() {
 	s.metaDal = &database.MetaDal{Db: database.MyDb()}
+	s.dMapDal = &database.SmallDepartmentMapDal{Db: database.MyDb()}
 }
 
 func (s *IndustryInformatizationMetaColly) PageTraverse() {
@@ -54,14 +57,14 @@ func (s *IndustryInformatizationMetaColly) Operate() {
 	// 读取响应体
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		fmt.Printf("读取响应体时发生错误：%s\n", err)
+		fmt.Printf("读取响应体时发生错误：%s\n, body: %v", err, body)
 		return
 	}
 
 	// 解析JSON
 	var data map[string]interface{}
 	if err := json.Unmarshal(body, &data); err != nil {
-		fmt.Printf("解析JSON时发生错误：%s\n", err)
+		fmt.Printf("解析JSON时发生错误：%s\n, data: %v", err, data)
 		return
 	}
 
@@ -89,7 +92,9 @@ func (s *IndustryInformatizationMetaColly) Operate() {
 	for _, result := range resp.Data.SearchResult.DataResults {
 		dateTime, _ := utils.StringToTime(result.Data.JsearchDate)
 		url := "https://wap.miit.gov.cn" + result.Data.URL
-		s.metaDal.InsertMeta(dateTime, result.Data.Title, url, departmentID, provinceID)
+
+		metaID := s.metaDal.InsertMeta(dateTime, result.Data.Title, url, departmentID, provinceID)
+		s.dMapDal.InsertDID(metaID, smallDepartmentID)
 
 		fmt.Printf("标题：%s，URL：%s，日期：%s\n", result.Data.Title, url, result.Data.JsearchDate)
 	}

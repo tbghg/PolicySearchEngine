@@ -162,8 +162,9 @@ const SearchComponent = () => {
                         <p className="result-date">Date: {formatDate(result._source.date)}</p>
                         <p className="result-content" dangerouslySetInnerHTML={{__html: result.highlight.content}}/>
                         <p className="result-source-tag">
-                            来源：<span className="result-province">{getNameById(provincesData, result._source.province_id)}</span> /
-                            <span className="result-department">{getNameById(departmentsData, result._source.department_id)}</span>
+                            {/*来源：<span className="result-province">{getNameById(provincesData, result._source.province_id)}</span> /*/}
+                            来源：<span className="result-province">{getNameById(provincesData, result._source.province_id)}</span>
+                            {/*<span className="result-department">{getNameById(departmentsData, result._source.department_id)}</span>*/}
                         </p>
                     </li>
                 ))}

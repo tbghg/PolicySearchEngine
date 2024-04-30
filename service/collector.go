@@ -1,8 +1,6 @@
 package service
 
 import (
-	"PolicySearchEngine/utils"
-	"fmt"
 	"github.com/gocolly/colly"
 	"regexp"
 )
@@ -27,12 +25,4 @@ func NormalRule(rule *regexp.Regexp, hfs ...*HtmlFunc) *Rule {
 		c.OnHTML(hf.QuerySelect, hf.F)
 	}
 	return &Rule{R: rule, C: c}
-}
-
-func NormalTitle(e *colly.HTMLElement) {
-	fmt.Println(utils.TidyString(e.Text))
-}
-
-func NormalContent(e *colly.HTMLElement) {
-	//fmt.Println(e.Text)
 }

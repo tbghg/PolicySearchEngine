@@ -23,6 +23,46 @@ var (
 )
 
 const (
+	queryFmt = `
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "bool": {
+            "should": [
+              {
+                "match": {
+                  "title": "%s"
+                }
+              },
+              {
+                "match": {
+                  "content": "%s"
+                }
+              }
+            ]
+          }
+        } %s
+      ]
+    }
+  },
+`
+	ResultFmtDSL = `
+	{
+  %s
+  "sort": [
+    {
+      "date": {
+        "order": "asc"
+      }
+    }
+  ],
+  "from": %d,
+  "size": %d,
+  "highlight": %s
+}
+`
+
 	// 构建高亮查询
 	highlight = `
 	{
@@ -35,36 +75,12 @@ const (
 		"post_tags": ["</em>"]
 	}`
 
-	// 一般搜索DSL
-	fmtQuery = `
-	{
-		"query": {
-			"bool": {
-				"should": [
-					%s
-				]
-			}
-		},
-		"sort": [
-			{ "date": { "order": "asc" }}
-		],
-		"from": %d,
-		"size": %d,
-		"highlight": %s
-	}`
-
 	// 分数搜索DSL
 	fmtScoreQuery = `
 	{
 	  "query": {
 	    "function_score": {
-	      "query": {
-            "bool": {
-              "must": [
-	            %s
-	          ]
-            }
-	      },
+	      %s
 	      "functions": [
 			%s
 	      ],
@@ -76,6 +92,7 @@ const (
 		"size": %d,
 		"highlight": %s
 	}`
+
 	fmtScoreFilter = `
 	{
 	  "filter": {
@@ -115,14 +132,15 @@ func Init() {
 	index = config.V.GetString("es.index")
 }
 
-func IndexDoc(date time.Time, departmentID, provinceID uint, title, url, content string) {
+func IndexDoc(date time.Time, departmentID, provinceID uint, title, url, content string, spIDs []uint) {
 	doc := model.ESDocument{
-		Title:        title,
-		Url:          url,
-		Date:         date,
-		Content:      content,
-		DepartmentID: departmentID,
-		ProvinceID:   provinceID,
+		Title:             title,
+		Url:               url,
+		Date:              date,
+		Content:           content,
+		DepartmentID:      departmentID,
+		SmallDepartmentID: spIDs,
+		ProvinceID:        provinceID,
 	}
 	data, _ := json.Marshal(doc)
 	idx, err := es.Index(index, bytes.NewReader(data))
@@ -145,45 +163,23 @@ func MatchAllDoc() {
 	fmt.Println(search.String())
 }
 
-func SearchDoc(searchQuery SearchInput, departmentID, provinceID, from, size int) *model.ESResp {
-
-	var mustQueries []string
-	if searchQuery.UseScore {
-		arr := strings.Split(searchQuery.Text, " ")
-		for _, s := range arr {
-			mustQueries = append(mustQueries,
-				fmt.Sprintf(fmtMustDsl, s, s),
-			)
-		}
-	} else {
-		mustQueries = append(mustQueries,
-			fmt.Sprintf(`{ "match": { "title": "%s" }}`, searchQuery.Text),
-			fmt.Sprintf(`{ "match": { "content": "%s" }}`, searchQuery.Text),
-		)
-	}
-	if departmentID != 0 {
-		mustQueries = append(mustQueries, fmt.Sprintf(`{ "term": { "department_id": %d }}`, departmentID))
-	}
-	if provinceID != 0 {
-		mustQueries = append(mustQueries, fmt.Sprintf(`{ "term": { "province_id": %d }}`, provinceID))
-	}
-
+// SearchDocBySmallDepartmentID 根据小部门筛
+func SearchDocBySmallDepartmentID(searchQuery SearchInput, smallDepartmentID, provinceID, from, size int) *model.ESResp {
 	var query string
-	if searchQuery.UseScore {
+	searchFmt := queryFmtPrint(searchQuery.Text, smallDepartmentID, provinceID)
+	if !searchQuery.UseScore {
+		query = fmt.Sprintf(ResultFmtDSL,
+			searchFmt,
+			from-1,
+			size,
+			highlight)
+	} else {
 		query = fmt.Sprintf(fmtScoreQuery,
-			strings.Join(mustQueries, ","),
+			searchFmt,
 			fmtScoreFilters(searchQuery.ScoreField),
 			from-1,
 			size,
-			highlight,
-		)
-	} else {
-		query = fmt.Sprintf(fmtQuery,
-			strings.Join(mustQueries, ","),
-			from-1,
-			size,
-			highlight,
-		)
+			highlight)
 	}
 
 	fmt.Println(query)
@@ -203,6 +199,22 @@ func SearchDoc(searchQuery SearchInput, departmentID, provinceID, from, size int
 	_ = json.NewDecoder(searchResult.Body).Decode(&responseData)
 
 	return &responseData
+}
+
+func queryFmtPrint(text string, smallDepartmentID, provinceID int) string {
+	query := ","
+	if smallDepartmentID == 0 && provinceID == 0 {
+		query = ""
+	} else if smallDepartmentID != 0 && provinceID != 0 {
+		query += fmt.Sprintf(`{ "match": { "small_department_id": %d }},`, smallDepartmentID)
+		query += fmt.Sprintf(`{ "match": { "province_id": %d }}`, provinceID)
+	} else if smallDepartmentID != 0 && provinceID == 0 {
+		query += fmt.Sprintf(`{ "match": { "small_department_id": %d }}`, smallDepartmentID)
+	} else if smallDepartmentID == 0 && provinceID != 0 {
+		query += fmt.Sprintf(`{ "match": { "province_id": %d }}`, provinceID)
+	}
+
+	return fmt.Sprintf(queryFmt, text, text, query)
 }
 
 func fmtScoreFilters(m map[string]float64) string {

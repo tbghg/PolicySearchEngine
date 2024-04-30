@@ -66,7 +66,8 @@ func searchHandel(c *gin.Context) {
 		return
 	}
 
-	esResp := es.SearchDoc(preSearch(searchQuery), departmentID, provinceID, page, size)
+	//esResp := es.SearchDocByDepartmentID(preSearch(searchQuery), departmentID, provinceID, page, size)
+	esResp := es.SearchDocBySmallDepartmentID(preSearch(searchQuery), departmentID, provinceID, page, size)
 	//totalPage := math.Ceil(float64(esResp.Hits.Total.Value) / size)
 
 	c.JSON(http.StatusOK, esResp.Hits)

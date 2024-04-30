@@ -11,7 +11,7 @@ import (
 type MetaDal struct{ Db *gorm.DB }
 
 // InsertMeta 添加meta
-func (m *MetaDal) InsertMeta(date time.Time, title string, url string, departmentID uint, provinceID uint) {
+func (m *MetaDal) InsertMeta(date time.Time, title string, url string, departmentID uint, provinceID uint) uint {
 	meta := model.Meta{
 		Date:         date,
 		Title:        title,
@@ -25,6 +25,7 @@ func (m *MetaDal) InsertMeta(date time.Time, title string, url string, departmen
 		fmt.Printf("InsertMeta... %s, %v", date.String(), meta)
 		log.Fatal(result.Error)
 	}
+	return meta.ID
 }
 
 func (m *MetaDal) UpdateMetaTitle(title string, url string) {
@@ -45,6 +46,16 @@ func (m *MetaDal) GetAllMeta(departmentID, provinceID uint) *[]model.Meta {
 		DepartmentID: departmentID,
 		ProvinceID:   provinceID,
 	}).Find(&metaList)
+	if result.Error != nil {
+		fmt.Printf("读取数据失败: %v\n", result.Error)
+		return nil
+	}
+	return &metaList
+}
+
+func (m *MetaDal) GetAllMetaByIDs(provinceID uint, id uint) *[]model.Meta {
+	var metaList []model.Meta
+	result := m.Db.Where("province_id = ? AND id > ?", provinceID, id).Find(&metaList)
 	if result.Error != nil {
 		fmt.Printf("读取数据失败: %v\n", result.Error)
 		return nil

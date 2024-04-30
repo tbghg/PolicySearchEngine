@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	departmentID = 1  // 科学技术部
+	departmentID = 91 // 国务院
 	provinceID   = 35 // 中央
 )
 
-type ScienceContentColly struct {
+type StateCouncilContentColly struct {
 	rules []*service.Rule
 	// 等待处理的url队列
 	waitQueue  *[]model.Meta
@@ -21,7 +21,7 @@ type ScienceContentColly struct {
 	dMapDal    *database.SmallDepartmentMapDal
 }
 
-func (s *ScienceContentColly) Init() {
+func (s *StateCouncilContentColly) Init() {
 	// 注册规则
 	s.rules = append(s.rules, s.getRules()...)
 	s.metaDal = &database.MetaDal{Db: database.MyDb()}
@@ -30,17 +30,25 @@ func (s *ScienceContentColly) Init() {
 }
 
 // Import 分批次导入
-func (s *ScienceContentColly) Import() (success bool) {
+func (s *StateCouncilContentColly) Import() (success bool) {
 	// todo 1. 暂时全量导入 2. 监控时需要单独区分哪些读过
 	metaList := s.metaDal.GetAllMeta(departmentID, provinceID)
 	if metaList == nil || len(*metaList) == 0 {
 		return false
 	}
 	s.waitQueue = metaList
+
+	// todo 测试
+	s.waitQueue = &[]model.Meta{
+		{
+			Url: "http://www.gov.cn/zhengce/zhengceku/2022-11/14/content_5726949.htm",
+		},
+	}
+
 	return true
 }
 
-func (s *ScienceContentColly) Run() {
+func (s *StateCouncilContentColly) Run() {
 
 	dealMeta := func(meta *model.Meta) {
 		var match bool
@@ -64,14 +72,14 @@ func (s *ScienceContentColly) Run() {
 	}
 }
 
-func (s *ScienceContentColly) Destroy() {
+func (s *StateCouncilContentColly) Destroy() {
 	s.rules = nil
 	s.metaDal = nil
 	s.contentDal = nil
 	s.waitQueue = nil
 }
 
-func (s *ScienceContentColly) ExecuteWorkflow() {
+func (s *StateCouncilContentColly) ExecuteWorkflow() {
 	s.Init()
 	if s.Import() {
 		s.Run()
@@ -79,4 +87,4 @@ func (s *ScienceContentColly) ExecuteWorkflow() {
 	s.Destroy()
 }
 
-var _ service.ContentCrawler = (*ScienceContentColly)(nil)
+var _ service.ContentCrawler = (*StateCouncilContentColly)(nil)

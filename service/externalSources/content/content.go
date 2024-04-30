@@ -8,11 +8,10 @@ import (
 )
 
 const (
-	departmentID = 1  // 科学技术部
-	provinceID   = 35 // 中央
+	provinceID = 35 // 中央
 )
 
-type ScienceContentColly struct {
+type ExternalSourcesContentColly struct {
 	rules []*service.Rule
 	// 等待处理的url队列
 	waitQueue  *[]model.Meta
@@ -21,7 +20,7 @@ type ScienceContentColly struct {
 	dMapDal    *database.SmallDepartmentMapDal
 }
 
-func (s *ScienceContentColly) Init() {
+func (s *ExternalSourcesContentColly) Init() {
 	// 注册规则
 	s.rules = append(s.rules, s.getRules()...)
 	s.metaDal = &database.MetaDal{Db: database.MyDb()}
@@ -30,9 +29,9 @@ func (s *ScienceContentColly) Init() {
 }
 
 // Import 分批次导入
-func (s *ScienceContentColly) Import() (success bool) {
+func (s *ExternalSourcesContentColly) Import() (success bool) {
 	// todo 1. 暂时全量导入 2. 监控时需要单独区分哪些读过
-	metaList := s.metaDal.GetAllMeta(departmentID, provinceID)
+	metaList := s.metaDal.GetAllMetaByIDs(provinceID, 26378)
 	if metaList == nil || len(*metaList) == 0 {
 		return false
 	}
@@ -40,7 +39,7 @@ func (s *ScienceContentColly) Import() (success bool) {
 	return true
 }
 
-func (s *ScienceContentColly) Run() {
+func (s *ExternalSourcesContentColly) Run() {
 
 	dealMeta := func(meta *model.Meta) {
 		var match bool
@@ -54,7 +53,9 @@ func (s *ScienceContentColly) Run() {
 			}
 		}
 		if !match {
-			fmt.Printf("url:%s 未匹配到任何规则\n", meta.Url)
+			if meta.Url[len(meta.Url)-4:] != ".pdf" {
+				fmt.Printf("url:%s 未匹配到任何规则\n", meta.Url)
+			}
 		}
 	}
 
@@ -64,14 +65,14 @@ func (s *ScienceContentColly) Run() {
 	}
 }
 
-func (s *ScienceContentColly) Destroy() {
+func (s *ExternalSourcesContentColly) Destroy() {
 	s.rules = nil
 	s.metaDal = nil
 	s.contentDal = nil
 	s.waitQueue = nil
 }
 
-func (s *ScienceContentColly) ExecuteWorkflow() {
+func (s *ExternalSourcesContentColly) ExecuteWorkflow() {
 	s.Init()
 	if s.Import() {
 		s.Run()
@@ -79,4 +80,4 @@ func (s *ScienceContentColly) ExecuteWorkflow() {
 	s.Destroy()
 }
 
-var _ service.ContentCrawler = (*ScienceContentColly)(nil)
+var _ service.ContentCrawler = (*ExternalSourcesContentColly)(nil)
