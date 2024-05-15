@@ -153,7 +153,7 @@ func (s *ExternalSourcesContentColly) ccgpCollector() *service.Rule {
 func (s *ExternalSourcesContentColly) cdeCollector() *service.Rule {
 
 	//https://www.cde.org.cn/main/news/viewInfoCommon/14aac16a4fc5b5841bc2529988a611cc
-	rule := regexp.MustCompile("https?://www\\.cde\\.gov\\.cn/main/news/.*")
+	rule := regexp.MustCompile("https?://www\\.cde\\.org\\.cn/main/news/.*")
 	hfContent := &service.HtmlFunc{
 		QuerySelect: ".new_detail_content",
 		F:           s.updateContent,
