@@ -30,6 +30,7 @@ func (s *StateCouncilContentColly) updateContent(e *colly.HTMLElement) {
 		}
 		text = append(text, []byte(child.Text)...)
 	})
+	s.contentDal.InsertContent(e.Request.URL.String(), string(text))
 
 	meta := s.metaDal.GetMetaByUrl(e.Request.URL.String())
 	if meta == nil {
