@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Pagination, Modal } from 'antd'; // 导入 Pagination 和 Modal 组件
+import { Pagination, Modal, Select } from 'antd'; // 导入 Pagination 和 Modal 组件
 import './SearchComponent.css';
 
 // 假设我们有以下省份和部门的数据结构
@@ -142,14 +142,20 @@ const SearchComponent = () => {
     const [total, setTotal] = useState(0); // 总条目数
     const [summary, setSummary] = useState(''); // 添加摘要内容的状态
     const [showSummaryModal, setShowSummaryModal] = useState(false); // 添加显示摘要的状态
+    const [options,setOptions] = useState([]);
 
     useEffect(() => {
         fetchData();
     }, [currentPage]); // 当当前页数、pid 或 did 发生变化时，重新获取数据
 
-    const handleChange = (event) => {
+    const handleSubmitChange = (event) => {
         setQuery(event.target.value);
     };
+
+    const handleSearchChange = (value) => {
+        setOptions(value);
+        console.log(value);
+    }
 
     const handlePidChange = (event) => {
         setPid(event.target.value);
@@ -169,7 +175,7 @@ const SearchComponent = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/search?s=${query}&pid=${pid}&did=${did}&page=${currentPage}`);
+            const response = await fetch(`http://localhost:3000/search?s=${query}&e=${options}&pid=${pid}&did=${did}&page=${currentPage}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -218,8 +224,17 @@ const SearchComponent = () => {
                     type="text"
                     placeholder="Search..."
                     value={query}
-                    onChange={handleChange}
+                    onChange={handleSubmitChange}
                     className="search-input"
+                />
+                <Select
+                    mode="tags"
+                    style={{
+                        width: '20%', // 你可以根据需要调整宽度
+                    }}
+                    placeholder="精确搜索词"
+                    onChange={handleSearchChange}
+                    value={options} // 确保 Select 的 value 与 options 状态同步
                 />
                 <select value={pid} onChange={handlePidChange} className="search-select">
                     {generateOptions(provincesData)}

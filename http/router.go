@@ -48,10 +48,12 @@ func summaryHandel(c *gin.Context) {
 func searchHandel(c *gin.Context) {
 
 	searchQuery := c.Query("s")
+	exactQuery := c.Query("e")
 	sDepartmentID := c.Query("did")
 	sProvinceID := c.Query("pid")
 	sPage := c.Query("page")
 
+	exact := strings.Split(exactQuery, ",")
 	page, err1 := strconv.Atoi(sPage)
 	departmentID, err2 := strconv.Atoi(sDepartmentID)
 	provinceID, err3 := strconv.Atoi(sProvinceID)
@@ -67,7 +69,7 @@ func searchHandel(c *gin.Context) {
 	}
 
 	//esResp := es.SearchDocByDepartmentID(preSearch(searchQuery), departmentID, provinceID, page, size)
-	esResp := es.SearchDocBySmallDepartmentID(preSearch(searchQuery), departmentID, provinceID, page, size)
+	esResp := es.SearchDocWithSmallDepartmentID(preSearch(searchQuery), exact, departmentID, provinceID, page, size)
 	//totalPage := math.Ceil(float64(esResp.Hits.Total.Value) / size)
 
 	c.JSON(http.StatusOK, esResp.Hits)

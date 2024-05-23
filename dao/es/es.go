@@ -42,7 +42,9 @@ const (
               }
             ]
           }
-        } %s
+        },
+		{ "bool": {"must": [%s]} }
+		 %s
       ]
     }
   },
@@ -116,6 +118,20 @@ const (
                 "minimum_should_match": 1
               }
             }`
+
+	exactFmt = `{
+					"bool": {
+						"should": [{
+							"term": {
+								"title": "%s"
+							}
+						}, {
+							"term": {
+								"content": "%s"
+							}
+						}]
+					}
+				}`
 )
 
 func Init() {
@@ -163,10 +179,10 @@ func MatchAllDoc() {
 	fmt.Println(search.String())
 }
 
-// SearchDocBySmallDepartmentID 根据小部门筛
-func SearchDocBySmallDepartmentID(searchQuery SearchInput, smallDepartmentID, provinceID, from, size int) *model.ESResp {
+// SearchDocWithSmallDepartmentID 根据小部门筛
+func SearchDocWithSmallDepartmentID(searchQuery SearchInput, exact []string, smallDepartmentID, provinceID, from, size int) *model.ESResp {
 	var query string
-	searchFmt := queryFmtPrint(searchQuery.Text, smallDepartmentID, provinceID)
+	searchFmt := queryFmtPrint(searchQuery.Text, exact, smallDepartmentID, provinceID)
 	if !searchQuery.UseScore {
 		query = fmt.Sprintf(ResultFmtDSL,
 			searchFmt,
@@ -201,7 +217,7 @@ func SearchDocBySmallDepartmentID(searchQuery SearchInput, smallDepartmentID, pr
 	return &responseData
 }
 
-func queryFmtPrint(text string, smallDepartmentID, provinceID int) string {
+func queryFmtPrint(text string, exact []string, smallDepartmentID, provinceID int) string {
 	query := ","
 	if smallDepartmentID == 0 && provinceID == 0 {
 		query = ""
@@ -214,7 +230,15 @@ func queryFmtPrint(text string, smallDepartmentID, provinceID int) string {
 		query += fmt.Sprintf(`{ "match": { "province_id": %d }}`, provinceID)
 	}
 
-	return fmt.Sprintf(queryFmt, text, text, query)
+	exactQuery := ""
+	for i := 0; i < len(exact); i++ {
+		exactQuery += fmt.Sprintf(exactFmt, exact[i], exact[i])
+		if i < len(exact)-1 {
+			exactQuery += ","
+		}
+	}
+
+	return fmt.Sprintf(queryFmt, text, text, exactQuery, query)
 }
 
 func fmtScoreFilters(m map[string]float64) string {

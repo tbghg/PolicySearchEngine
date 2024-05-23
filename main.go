@@ -5,7 +5,6 @@ import (
 	"PolicySearchEngine/dao/database"
 	"PolicySearchEngine/dao/es"
 	"PolicySearchEngine/http"
-	"PolicySearchEngine/service"
 )
 
 func main() {
@@ -15,7 +14,7 @@ func main() {
 	database.InitTable()
 	es.Init()
 
-	var crawler service.Crawlers
+	//var crawler service.Crawlers
 
 	//var scienceColly science_center.ScienceColly
 	//scienceColly.Register(&crawler)
@@ -32,6 +31,6 @@ func main() {
 	//var externalSourcesColly externalSources.ExternalSourcesColly
 	//externalSourcesColly.Register(&crawler)
 
-	crawler.Run()
+	//crawler.Run()
 	http.Router()
 }
