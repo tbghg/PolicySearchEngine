@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Pagination, Modal, Select } from 'antd'; // 导入 Pagination 和 Modal 组件
+import { Pagination, Modal, Select, notification } from 'antd'; // 导入 Pagination 和 Modal 组件
 import './SearchComponent.css';
 
 // 假设我们有以下省份和部门的数据结构
@@ -144,6 +144,15 @@ const SearchComponent = () => {
     const [showSummaryModal, setShowSummaryModal] = useState(false); // 添加显示摘要的状态
     const [options,setOptions] = useState([]);
 
+    const [api, contextHolder] = notification.useNotification();
+    const openNotificationWithIcon = (type) => {
+        api[type]({
+            message: '搜索栏不能为空',
+            duration: 0.75,
+            placement: 'top'
+        });
+    };
+
     useEffect(() => {
         fetchData();
     }, [currentPage]); // 当当前页数、pid 或 did 发生变化时，重新获取数据
@@ -189,6 +198,11 @@ const SearchComponent = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        if (query.trim() === '') {
+            // message.warning('搜索栏不能为空'); // 显示提示信息
+            openNotificationWithIcon('warning')
+            return;
+        }
         setCurrentPage(1); // 提交搜索时重置当前页数为第一页
         fetchData(); // 在重置 currentPage 后立即执行 fetchData
     };
@@ -219,6 +233,7 @@ const SearchComponent = () => {
 
     return (
         <div className="search-container">
+            {contextHolder}
             <form onSubmit={handleSubmit} className="search-form">
                 <input
                     type="text"
