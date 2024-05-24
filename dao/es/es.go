@@ -122,11 +122,11 @@ const (
 	exactFmt = `{
 					"bool": {
 						"should": [{
-							"term": {
+							"match_phrase": {
 								"title": "%s"
 							}
 						}, {
-							"term": {
+							"match_phrase": {
 								"content": "%s"
 							}
 						}]
@@ -230,10 +230,17 @@ func queryFmtPrint(text string, exact []string, smallDepartmentID, provinceID in
 		query += fmt.Sprintf(`{ "match": { "province_id": %d }}`, provinceID)
 	}
 
+	var exactTrim []string
+	for _, str := range exact {
+		if str != "" {
+			exactTrim = append(exactTrim, str)
+		}
+	}
+
 	exactQuery := ""
-	for i := 0; i < len(exact); i++ {
-		exactQuery += fmt.Sprintf(exactFmt, exact[i], exact[i])
-		if i < len(exact)-1 {
+	for i := 0; i < len(exactTrim); i++ {
+		exactQuery += fmt.Sprintf(exactFmt, exactTrim[i], exactTrim[i])
+		if i < len(exactTrim)-1 {
 			exactQuery += ","
 		}
 	}
